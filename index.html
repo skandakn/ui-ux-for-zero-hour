@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>APPROVA // Fintech Approval Workflow & 3D Audit Dashboard</title>
+  <title>APPROVA // Dashboard Widget & Fintech Operations Suite</title>
   
   <!-- Tailwind CSS CDN -->
   <script src="https://cdn.tailwindcss.com"></script>
@@ -63,10 +63,10 @@
       position: absolute;
       font-family: 'Archivo', sans-serif;
       font-weight: 900;
-      font-size: 56px;
+      font-size: 52px;
       letter-spacing: 0.16em;
       border: 8px solid currentColor;
-      padding: 14px 34px;
+      padding: 12px 30px;
       border-radius: 6px;
       pointer-events: none;
       z-index: 40;
@@ -78,7 +78,7 @@
     .chain-node { width:28px; height:28px; border:2px solid #121210; border-radius:999px; display:inline-flex; align-items:center; justify-content:center; font-size:11px; font-weight:700; }
     .chain-line { width:16px; height:3px; background:#121210; }
     
-    .stamp-btn { display:flex; flex-direction:column; align-items:center; justify-content:center; gap:6px; padding:18px 12px; border:3px solid #121210; box-shadow: 4px 4px 0 #121210; cursor:pointer; font-family:'Archivo'; font-weight:800; letter-spacing:0.1em; transition:all 0.15s ease; }
+    .stamp-btn { display:flex; flex-direction:column; align-items:center; justify-content:center; gap:6px; padding:16px 12px; border:3px solid #121210; box-shadow: 4px 4px 0 #121210; cursor:pointer; font-family:'Archivo'; font-weight:800; letter-spacing:0.1em; transition:all 0.15s ease; }
     .stamp-btn:hover { transform: translate(-2px,-2px); box-shadow: 6px 6px 0 #121210; }
     .stamp-btn:active { transform: translate(4px,4px); box-shadow: 0 0 0 #121210 !important; }
 
@@ -90,22 +90,169 @@
 </head>
 <body class="min-h-screen text-[#121210] selection:bg-[#2E8C42] selection:text-white">
 
-<!-- NOTIFICATION TOAST -->
-<div id="toast" class="fixed top-5 right-5 z-50 transform translate-y-[-100px] opacity-0 transition-all duration-300 pointer-events-none">
-  <div class="brut bg-white p-4 flex items-center gap-3">
-    <div id="toast-icon" class="w-8 h-8 rounded bg-[#2E8C42] text-white flex items-center justify-center font-bold text-lg">✓</div>
-    <div>
-      <div id="toast-title" class="font-display font-bold text-sm">Action Confirmed</div>
-      <div id="toast-desc" class="text-xs font-mono opacity-70">Transaction committed to ledger.</div>
-    </div>
+<!-- VIEW SWITCHER HEADER BAR -->
+<div class="bg-[#121210] text-white px-6 py-2.5 flex items-center justify-between border-b-2 border-black z-50 sticky top-0">
+  <div class="flex items-center gap-3">
+    <div class="w-6 h-6 bg-[#2E8C42] flex items-center justify-center font-bold text-xs">A</div>
+    <span class="font-display font-extrabold text-xs tracking-wider">APPROVA // DASHBOARD SUITE</span>
+    <span class="hidden sm:inline-block font-mono text-[10px] text-emerald-400 bg-white/10 px-2 py-0.5 rounded">CHALLENGE TOPIC: DASHBOARD WIDGET</span>
+  </div>
+
+  <!-- Switch between Standalone Widget Mode & Full Template -->
+  <div class="flex items-center gap-2">
+    <span class="text-[10px] font-mono text-slate-400 hidden md:inline">DISPLAY MODE:</span>
+    <button id="tab-btn-widget" onclick="setViewMode('widget')" class="px-3 py-1 font-mono text-xs font-bold border border-white bg-[#2E8C42] text-white transition-all">
+      🎛️ STANDALONE WIDGET
+    </button>
+    <button id="tab-btn-full" onclick="setViewMode('full')" class="px-3 py-1 font-mono text-xs font-bold border border-white/30 bg-transparent text-slate-300 hover:text-white transition-all">
+      🖥️ FULL DASHBOARD
+    </button>
   </div>
 </div>
 
-<div class="min-h-screen flex flex-col xl:flex-row">
+<!-- ========================================================
+     MODE A: STANDALONE DASHBOARD WIDGET VIEW
+     (Presents all vital information clearly, effectively & with 3D elements)
+     ======================================================== -->
+<section id="standalone-widget-view" class="p-6 md:p-12 min-h-[92vh] flex flex-col items-center justify-center grid-paper">
+  
+  <div class="w-full max-w-4xl">
+    <!-- Context Header -->
+    <div class="flex items-center justify-between mb-4 flex-wrap gap-2">
+      <div>
+        <span class="tag bg-[#2E8C42] text-white">FINTECH OPERATIONS WIDGET</span>
+        <h2 class="font-display font-black text-2xl sm:text-3xl mt-1 text-[#121210]">Executive PO Approval Widget</h2>
+      </div>
+      <div class="flex items-center gap-2 text-xs font-mono">
+        <span class="px-2 py-1 bg-white brut-sm">GRID SIZE: 2x2 EXEC</span>
+        <span class="px-2 py-1 bg-[#E8A030] brut-sm font-bold">12 PENDING</span>
+      </div>
+    </div>
 
-  <!-- ==========================================
-       SIDEBAR NAVIGATION PANE
-       ========================================== -->
+    <!-- THE MASTER DASHBOARD WIDGET CONTAINER -->
+    <div class="brut-lg bg-white rounded-none p-6 sm:p-8 relative overflow-hidden shadow-2xl">
+      
+      <!-- Top Widget Status Bar -->
+      <div class="flex items-center justify-between border-b-[3px] border-[#121210] pb-4 mb-6 flex-wrap gap-3">
+        <div class="flex items-center gap-3">
+          <div class="w-10 h-10 bg-[#2E8C42] brut-sm flex items-center justify-center text-white">
+            <i class="ti ti-stamp text-2xl"></i>
+          </div>
+          <div>
+            <div class="font-display font-bold text-lg leading-tight flex items-center gap-2">
+              Approva Decision Station
+              <span class="w-2.5 h-2.5 rounded-full bg-[#2E8C42] animate-ping"></span>
+            </div>
+            <div class="text-[11px] font-mono opacity-60">RAPID TRIAGE & POLICY VALIDATION</div>
+          </div>
+        </div>
+
+        <div class="flex items-center gap-2">
+          <button onclick="widgetPrevPO()" class="brut-sm bg-white px-2.5 py-1 text-xs font-bold hover:bg-slate-100"><i class="ti ti-chevron-left"></i></button>
+          <span class="font-mono text-xs font-bold px-2" id="widget-pagination">1 of 4</span>
+          <button onclick="widgetNextPO()" class="brut-sm bg-white px-2.5 py-1 text-xs font-bold hover:bg-slate-100"><i class="ti ti-chevron-right"></i></button>
+        </div>
+      </div>
+
+      <!-- Widget Content Grid -->
+      <div class="grid grid-cols-1 md:grid-cols-12 gap-6 items-center">
+        
+        <!-- Left: 3D Interactive Seal Widget Canvas -->
+        <div class="md:col-span-4 flex flex-col items-center">
+          <div class="w-full h-44 bg-[#F4FAF6] brut border-[#121210] relative flex items-center justify-center overflow-hidden cursor-grab active:cursor-grabbing" id="widget-3d-seal">
+            <div class="absolute top-2 left-2 text-[9px] font-mono bg-[#CFE8D6] px-1.5 py-0.5 border border-[#121210] font-bold">3D KINETIC SEAL</div>
+            <div class="absolute bottom-1 right-2 text-[8px] font-mono opacity-50 uppercase">Drag to Rotate</div>
+          </div>
+          <div class="flex items-center justify-between w-full mt-2 text-[10px] font-mono">
+            <span class="opacity-60">CFO Audit Token</span>
+            <button onclick="switch3DMaterial()" class="underline hover:text-[#2E8C42] font-bold">Rotate Color</button>
+          </div>
+        </div>
+
+        <!-- Center: Primary Information Density (Clearly & Effectively Presented) -->
+        <div class="md:col-span-5 space-y-3">
+          <div class="flex items-center gap-2 flex-wrap">
+            <span class="tag bg-[#E8A030] text-black" id="w-id">PO-2025-0418</span>
+            <span class="tag bg-[#CFE8D6]" id="w-category">CAPEX · WAREHOUSE</span>
+            <span class="tag bg-[#C03A3A] text-white" id="w-sla">3D SLA LEFT</span>
+          </div>
+
+          <div>
+            <div class="font-display font-extrabold text-2xl text-[#121210]" id="w-vendor">Helvetica Logistics Co.</div>
+            <div class="text-xs font-mono opacity-70 mt-0.5" id="w-desc">Q1 Warehouse Rack Replacement · 14 items</div>
+          </div>
+
+          <!-- Key Financial Metric -->
+          <div class="brut-sm bg-[#CFE8D6] p-3 flex items-center justify-between">
+            <div>
+              <div class="text-[10px] font-mono tracking-widest opacity-60 font-bold">TOTAL AMOUNT</div>
+              <div class="font-mono font-black text-2xl text-[#121210]" id="w-amount">$48,920.00</div>
+            </div>
+            <div class="text-right text-[11px] font-mono">
+              <span class="text-[#2E8C42] font-bold">● Budget OK (62%)</span><br/>
+              <span class="opacity-60">Net-30 Wire</span>
+            </div>
+          </div>
+
+          <!-- Stepper Dots -->
+          <div class="flex items-center gap-1.5 pt-1">
+            <span class="text-[10px] font-mono font-bold mr-1 opacity-60">CHAIN:</span>
+            <span class="chain-node bg-[#2E8C42] text-white text-[10px]">✓</span>
+            <span class="chain-line"></span>
+            <span class="chain-node bg-[#2E8C42] text-white text-[10px]">✓</span>
+            <span class="chain-line"></span>
+            <span class="chain-node bg-[#E8A030] text-[10px]">M</span>
+            <span class="chain-line"></span>
+            <span class="chain-node bg-white text-[10px] opacity-40">·</span>
+          </div>
+        </div>
+
+        <!-- Right: Rapid Decision Action Buttons -->
+        <div class="md:col-span-3 flex flex-col gap-2.5">
+          <button onclick="applyDecision('APPROVED', '#2E8C42')" class="brut bg-[#2E8C42] text-white font-display font-bold py-3 px-4 btn-press text-center flex items-center justify-center gap-2">
+            <i class="ti ti-check text-xl"></i>
+            <span>APPROVE</span>
+          </button>
+          <button onclick="applyDecision('REJECTED', '#C03A3A')" class="brut bg-[#C03A3A] text-white font-display font-bold py-2.5 px-4 btn-press text-center flex items-center justify-center gap-2">
+            <i class="ti ti-x text-lg"></i>
+            <span>REJECT</span>
+          </button>
+          <button onclick="applyDecision('NEEDS DETAIL', '#E8A030')" class="brut bg-[#E8A030] text-[#121210] font-display font-bold py-2 px-4 btn-press text-center flex items-center justify-center gap-2 text-xs">
+            <i class="ti ti-info-circle text-base"></i>
+            <span>NEEDS DETAIL</span>
+          </button>
+        </div>
+
+      </div>
+
+      <!-- Bottom Telemetry Strip in Widget -->
+      <div class="mt-6 pt-4 border-t-2 border-[#121210]/20 flex items-center justify-between text-xs font-mono flex-wrap gap-2">
+        <div class="flex items-center gap-3">
+          <span class="flex items-center gap-1"><i class="ti ti-shield-check text-[#2E8C42]"></i> 3-Quote Policy: <b>PASS</b></span>
+          <span class="flex items-center gap-1"><i class="ti ti-user-check text-[#2E8C42]"></i> Submitter: <b>D. Park (Ops)</b></span>
+        </div>
+        <button onclick="setViewMode('full')" class="font-bold underline hover:text-[#2E8C42] flex items-center gap-1">
+          Open Full Invoice Details & Audit Ledger →
+        </button>
+      </div>
+
+    </div>
+
+    <!-- Widget Info Badge -->
+    <div class="mt-4 flex items-center justify-between text-xs font-mono opacity-70">
+      <span>* Standalone widget designed to fit into any modular ERP / Fintech dashboard grid</span>
+      <span>Press <b>Ctrl+Enter</b> to Approve instantly</span>
+    </div>
+  </div>
+
+</section>
+
+<!-- ========================================================
+     MODE B: FULL APPROVA THREE-PANE DASHBOARD VIEW
+     ======================================================== -->
+<div id="full-dashboard-view" class="hidden min-h-screen flex flex-col xl:flex-row">
+
+  <!-- SIDEBAR NAVIGATION PANE -->
   <aside class="w-full xl:w-[280px] shrink-0 bg-[#CFE8D6] border-b-[3px] xl:border-b-0 xl:border-r-[3px] border-[#121210] p-5 flex flex-col gap-2">
     <!-- Brand / Header -->
     <div class="flex items-center gap-3 mb-4">
@@ -118,7 +265,7 @@
       </div>
     </div>
 
-    <!-- 3D KINETIC AUDIT SEAL WIDGET -->
+    <!-- 3D KINETIC AUDIT SEAL IN SIDEBAR -->
     <div class="brut bg-white p-3.5 mb-2 relative overflow-hidden">
       <div class="flex items-center justify-between mb-1.5">
         <span class="font-mono text-[10px] font-bold tracking-widest text-[#2E8C42] flex items-center gap-1.5">
@@ -127,14 +274,13 @@
         <span class="font-mono text-[9px] bg-[#CFE8D6] px-1.5 py-0.5 border border-[#121210] font-bold">KINETIC</span>
       </div>
       
-      <!-- 3D Three.js Container -->
-      <div class="h-32 w-full bg-[#F4FAF6] border-2 border-[#121210] relative flex items-center justify-center overflow-hidden cursor-grab active:cursor-grabbing" id="three-seal-container">
-        <div class="absolute bottom-1 right-1.5 text-[8px] font-mono opacity-50 pointer-events-none uppercase">Drag 3D Coin</div>
+      <div class="h-28 w-full bg-[#F4FAF6] border-2 border-[#121210] relative flex items-center justify-center overflow-hidden cursor-grab active:cursor-grabbing" id="sidebar-3d-seal">
+        <div class="absolute bottom-1 right-1.5 text-[8px] font-mono opacity-50 pointer-events-none uppercase">Interactive</div>
       </div>
 
       <div class="grid grid-cols-2 gap-1.5 mt-2">
-        <button onclick="trigger3DAction('APPROVED')" class="brut-sm bg-[#2E8C42] text-white text-[10px] font-display font-bold py-1 btn-press flex items-center justify-center gap-1">
-          <i class="ti ti-check"></i> 3D STAMP
+        <button onclick="applyDecision('APPROVED', '#2E8C42')" class="brut-sm bg-[#2E8C42] text-white text-[10px] font-display font-bold py-1 btn-press flex items-center justify-center gap-1">
+          <i class="ti ti-check"></i> STAMP
         </button>
         <button onclick="switch3DMaterial()" class="brut-sm bg-white text-[10px] font-display font-bold py-1 btn-press flex items-center justify-center gap-1">
           <i class="ti ti-palette"></i> COLOR
@@ -146,7 +292,7 @@
 
     <a class="nav-item brut bg-[#FFFFFF] flex items-center justify-between p-2.5 cursor-pointer" onclick="filterQueue('all')">
       <span class="flex items-center gap-2.5 font-display font-bold text-sm"><i class="ti ti-inbox text-lg"></i>Inbox</span>
-      <span class="bg-[#121210] text-[#FFFFFF] font-mono text-xs px-2 py-0.5" id="nav-inbox-count">12</span>
+      <span class="bg-[#121210] text-[#FFFFFF] font-mono text-xs px-2 py-0.5">12</span>
     </a>
     <a class="nav-item brut bg-[#E8A030] flex items-center justify-between p-2.5 cursor-pointer" onclick="filterQueue('escalated')">
       <span class="flex items-center gap-2.5 font-display font-bold text-sm"><i class="ti ti-flame text-lg"></i>Escalations</span>
@@ -173,11 +319,6 @@
           <div class="bg-[#C03A3A] w-[15%]" title="Rejected: 15%"></div>
           <div class="bg-[#E8A030] w-[20%]" title="Needs Detail: 20%"></div>
         </div>
-        <div class="flex justify-between text-[9px] font-mono opacity-60 mt-1">
-          <span>65% APP</span>
-          <span>15% REJ</span>
-          <span>20% REV</span>
-        </div>
       </div>
 
       <div class="flex items-center gap-2.5 mt-3 p-2 bg-white/50 border-2 border-[#121210]">
@@ -190,9 +331,7 @@
     </div>
   </aside>
 
-  <!-- ==========================================
-       MAIN PANE
-       ========================================== -->
+  <!-- MAIN DASHBOARD CONTENT -->
   <main class="flex-1 flex flex-col min-w-0">
 
     <!-- TOP HEADER -->
@@ -200,12 +339,11 @@
       <div>
         <div class="flex items-center gap-3 flex-wrap">
           <h1 class="font-display font-black text-2xl sm:text-3xl tracking-tight">Approver Inbox</h1>
-          <span class="tag bg-[#FFFFFF]" id="pill-pending">12 PENDING</span>
+          <span class="tag bg-[#FFFFFF]">12 PENDING</span>
           <span class="tag bg-[#C03A3A] text-[#FFFFFF] border-[#121210]">3 PAST SLA</span>
-          <span class="tag bg-[#E8A030] text-[#121210]">HOTKEYS ACTIVE</span>
         </div>
         <div class="text-xs font-mono opacity-70 mt-1 flex items-center gap-2">
-          <span id="live-timestamp">LIVE · 15 OCT 2026 · 13:42:18 UTC</span>
+          <span>LIVE · 15 OCT 2026 · 13:42:18 UTC</span>
           <span class="w-2 h-2 rounded-full bg-[#2E8C42] animate-ping"></span>
         </div>
       </div>
@@ -222,21 +360,12 @@
       </div>
     </header>
 
-    <!-- TABS -->
-    <div class="px-6 pt-3 flex gap-0 border-b-[3px] border-[#121210] bg-[#CFE8D6] overflow-x-auto">
-      <button class="tab-active font-display font-bold px-5 py-2 border-[3px] border-[#121210] border-b-0 -mb-[3px] text-xs">Inbox (12)</button>
-      <button onclick="scrollToSection('escalation-section')" class="font-display font-bold px-5 py-2 border-[3px] border-[#121210] border-l-0 border-b-0 -mb-[3px] bg-[#FFFFFF] text-xs hover:bg-slate-50">Escalations (3)</button>
-      <button onclick="scrollToSection('history-table-section')" class="font-display font-bold px-5 py-2 border-[3px] border-[#121210] border-l-0 border-b-0 -mb-[3px] bg-[#FFFFFF] text-xs hover:bg-slate-50">Audit History</button>
-      <button onclick="scrollToSection('workflow-builder-section')" class="font-display font-bold px-5 py-2 border-[3px] border-[#121210] border-l-0 border-b-0 -mb-[3px] bg-[#FFFFFF] text-xs hover:bg-slate-50">Workflow Builder</button>
-    </div>
-
     <!-- THREE-PANE CORE: REQUEST QUEUE + DOCUMENT DETAIL + ACTION RAIL -->
     <div class="flex flex-col lg:flex-row flex-1 min-h-0">
 
       <!-- REQUEST QUEUE PANE -->
       <section class="w-full lg:w-[42%] xl:w-[38%] border-b-[3px] lg:border-b-0 lg:border-r-[3px] border-[#121210] p-5 space-y-4 overflow-y-auto bg-[#CFE8D6] max-h-[85vh] lg:max-h-none" id="requests-queue">
 
-        <!-- Subheader filters -->
         <div class="flex items-center justify-between text-xs font-mono">
           <div class="flex gap-1.5">
             <button onclick="filterQueue('all')" class="brut-sm bg-[#FFFFFF] px-2.5 py-0.5 font-bold">ALL</button>
@@ -246,9 +375,8 @@
           <span class="opacity-60 text-[11px]">SORT: SLA URGENCY ↓</span>
         </div>
 
-        <!-- Request Cards List -->
+        <!-- Cards List -->
         <div id="cards-container" class="space-y-4">
-          <!-- Card 1 (Active) -->
           <article class="req-card brut-card p-4 relative cursor-pointer active-card" onclick="selectPO(0, this)">
             <span class="absolute -top-2.5 -left-2 bg-[#E8A030] border-2 border-[#121210] px-2 py-0.5 text-[10px] font-mono font-bold">PO-2025-0418</span>
             <div class="flex justify-between items-start gap-2">
@@ -283,7 +411,6 @@
             </div>
           </article>
 
-          <!-- Card 2 -->
           <article class="req-card brut-card p-4 relative cursor-pointer" onclick="selectPO(1, this)">
             <span class="absolute -top-2.5 -left-2 bg-[#FFFFFF] border-2 border-[#121210] px-2 py-0.5 text-[10px] font-mono font-bold">EXP-9921</span>
             <div class="flex justify-between items-start gap-2">
@@ -316,7 +443,6 @@
             </div>
           </article>
 
-          <!-- Card 3 (Escalated) -->
           <article class="req-card brut-card p-4 relative cursor-pointer" onclick="selectPO(2, this)">
             <span class="absolute -top-2.5 -left-2 bg-[#C03A3A] text-[#FFFFFF] border-2 border-[#121210] px-2 py-0.5 text-[10px] font-mono font-bold">⚠ PO-2025-0402</span>
             <div class="flex justify-between items-start gap-2">
@@ -348,38 +474,6 @@
               </div>
             </div>
           </article>
-
-          <!-- Card 4 -->
-          <article class="req-card brut-card p-4 relative cursor-pointer" onclick="selectPO(3, this)">
-            <span class="absolute -top-2.5 -left-2 bg-[#FFFFFF] border-2 border-[#121210] px-2 py-0.5 text-[10px] font-mono font-bold">EXP-9918</span>
-            <div class="flex justify-between items-start gap-2">
-              <div>
-                <div class="font-display font-bold text-lg leading-tight">AWS Cloud Infrastructure</div>
-                <div class="text-xs opacity-70 mt-0.5">Production cluster spend · auto-billed</div>
-              </div>
-              <div class="text-right shrink-0">
-                <div class="font-mono font-bold text-xl">$27,304.18</div>
-                <div class="text-[10px] font-mono opacity-60">USD · ACH</div>
-              </div>
-            </div>
-            <div class="flex items-center gap-2 mt-3 flex-wrap">
-              <span class="tag bg-[#CFE8D6]">INFRA</span>
-              <span class="tag bg-[#FFFFFF]">RECURRING</span>
-            </div>
-            <div class="flex items-center justify-between mt-4">
-              <div class="flex items-center gap-2">
-                <img src="https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=80&h=80&fit=crop&crop=face" class="w-7 h-7 border-2 border-[#121210] object-cover"/>
-                <div class="text-xs"><span class="font-semibold">Noor Halberg</span><br/><span class="opacity-60 font-mono text-[10px]">ENG LEAD · 07:30</span></div>
-              </div>
-              <div class="flex items-center">
-                <span class="chain-node bg-[#2E8C42] text-white">✓</span>
-                <span class="chain-line"></span>
-                <span class="chain-node bg-[#2E8C42] text-white">✓</span>
-                <span class="chain-line"></span>
-                <span class="chain-node bg-[#E8A030]">M</span>
-              </div>
-            </div>
-          </article>
         </div>
 
       </section>
@@ -392,10 +486,8 @@
           <!-- PURCHASE ORDER INVOICE DOCUMENT -->
           <div id="invoice" class="w-full xl:flex-1 bg-white brut-lg p-6 sm:p-7 relative overflow-hidden min-h-[560px]">
 
-            <!-- Watermark Big Stamp Drop Target -->
             <div id="stamp-drop" class="absolute top-12 right-12 pointer-events-none"></div>
 
-            <!-- Invoice Top Header -->
             <div class="flex justify-between items-start border-b-[3px] border-[#121210] pb-4 gap-4">
               <div>
                 <div class="font-display font-extrabold text-2xl sm:text-3xl" id="doc-title">PURCHASE ORDER</div>
@@ -408,7 +500,6 @@
               </div>
             </div>
 
-            <!-- Key Metadata Columns -->
             <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 mt-5">
               <div>
                 <div class="font-mono text-[10px] opacity-60 tracking-widest">VENDOR</div>
@@ -427,7 +518,7 @@
               </div>
             </div>
 
-            <!-- Line Items Table -->
+            <!-- Table -->
             <div class="overflow-x-auto mt-6">
               <table class="w-full font-mono text-xs sm:text-sm">
                 <thead>
@@ -451,60 +542,30 @@
                 </tfoot>
               </table>
             </div>
-
-            <!-- Approval Stepper Chain -->
-            <div class="mt-6 border-t-[3px] border-[#121210] pt-4">
-              <div class="font-mono text-[10px] opacity-60 tracking-widest mb-3 uppercase font-bold">Multi-Stage Approval Hierarchy</div>
-              <div class="flex items-center gap-2 flex-wrap">
-                <div class="brut-sm bg-[#2E8C42] text-white px-3 py-1.5 text-xs">
-                  <div class="font-bold">D. Park</div><div class="text-[10px] opacity-90">Submitter</div>
-                </div>
-                <i class="ti ti-arrow-narrow-right text-xl"></i>
-                <div class="brut-sm bg-[#2E8C42] text-white px-3 py-1.5 text-xs">
-                  <div class="font-bold">A. Klein ✓</div><div class="text-[10px] opacity-90">Mgr · 09:18</div>
-                </div>
-                <i class="ti ti-arrow-narrow-right text-xl"></i>
-                <div class="brut-sm bg-[#2E8C42] text-white px-3 py-1.5 text-xs">
-                  <div class="font-bold">R. Sato ✓</div><div class="text-[10px] opacity-90">Fin Ctrl · 09:31</div>
-                </div>
-                <i class="ti ti-arrow-narrow-right text-xl"></i>
-                <div class="brut-sm bg-[#E8A030] px-3 py-1.5 text-xs">
-                  <div class="font-bold">YOU (CFO)</div><div class="text-[10px] font-bold">Pending Review</div>
-                </div>
-                <i class="ti ti-arrow-narrow-right text-xl opacity-40"></i>
-                <div class="border-2 border-dashed border-[#121210]/40 px-3 py-1.5 text-xs opacity-60">
-                  <div class="font-bold">Board</div><div class="text-[10px]">Cond. ≥ $50k</div>
-                </div>
-              </div>
-            </div>
           </div>
 
           <!-- STAMP DECISION ACTION RAIL -->
           <div class="w-full xl:w-48 shrink-0 space-y-4">
             <div class="font-mono text-[10px] tracking-widest opacity-60 uppercase font-bold">Audit Decision</div>
             
-            <!-- Approve Button -->
             <button id="btn-approve" onclick="applyDecision('APPROVED', '#2E8C42')" class="stamp-btn w-full bg-[#2E8C42] text-white">
               <i class="ti ti-check text-3xl"></i>
               <span class="text-base tracking-wider">APPROVE</span>
               <span class="font-mono text-[10px] opacity-80 normal-case tracking-normal">⌘ + ↵</span>
             </button>
 
-            <!-- Reject Button -->
             <button id="btn-reject" onclick="applyDecision('REJECTED', '#C03A3A')" class="stamp-btn w-full bg-[#C03A3A] text-white">
               <i class="ti ti-x text-3xl"></i>
               <span class="text-base tracking-wider">REJECT</span>
               <span class="font-mono text-[10px] opacity-80 normal-case tracking-normal">⌘ + ⌫</span>
             </button>
 
-            <!-- Needs Detail Button -->
             <button id="btn-detail" onclick="applyDecision('NEEDS DETAIL', '#E8A030')" class="stamp-btn w-full bg-[#E8A030] text-[#121210]">
               <i class="ti ti-info-circle text-3xl"></i>
               <span class="text-sm tracking-wider">NEEDS DETAIL</span>
               <span class="font-mono text-[10px] opacity-80 normal-case tracking-normal">⌘ + D</span>
             </button>
 
-            <!-- POLICY CHECKLIST WIDGET -->
             <div class="brut bg-white p-3.5 mt-4">
               <div class="font-mono text-[10px] tracking-widest opacity-60 uppercase mb-2 font-bold">Policy Rules</div>
               <div class="text-xs py-1 flex justify-between border-b border-[#121210]/10">
@@ -516,153 +577,6 @@
               <div class="text-xs py-1 flex justify-between border-b border-[#121210]/10">
                 <span>Vendor KYC</span><span class="text-[#2E8C42] font-bold">VERIFIED</span>
               </div>
-              <div class="text-xs py-1 flex justify-between">
-                <span>SLA Risk</span><span class="text-[#E8A030] font-bold">3D LEFT</span>
-              </div>
-            </div>
-
-            <!-- HOTKEYS REMINDER -->
-            <div class="brut bg-[#CFE8D6] p-2.5 text-[10px] font-mono opacity-80 space-y-1">
-              <div class="font-bold border-b border-[#121210]/20 pb-0.5">KEYBOARD SHORTCUTS</div>
-              <div><span class="font-bold">Ctrl/⌘+Enter</span>: Approve</div>
-              <div><span class="font-bold">Ctrl/⌘+Bksp</span>: Reject</div>
-              <div><span class="font-bold">Ctrl/⌘+D</span>: Needs Detail</div>
-            </div>
-
-          </div>
-        </div>
-
-        <!-- AUDIT LOG TERMINAL -->
-        <div class="mt-6 brut bg-[#121210] text-[#FFFFFF] p-5 shadow-lg">
-          <div class="flex items-center justify-between mb-3">
-            <div class="font-display font-bold text-lg flex items-center gap-2"><i class="ti ti-list-details text-[#2E8C42]"></i>IMMUTABLE AUDIT LOG</div>
-            <span class="font-mono text-[10px] opacity-60 tracking-wider">SHA-256 STATE CHAIN</span>
-          </div>
-          <pre id="audit-terminal-log" class="font-mono text-xs leading-6 whitespace-pre-wrap opacity-90 overflow-x-auto max-h-48">
-2026-10-15 09:11:02Z  CREATED   devin.park@stamply.io     PO-2025-0418 submitted · $48,920.00
-2026-10-15 09:11:04Z  ROUTED    system                    → chain "CapEx ≥ $25k" (4 stages)
-2026-10-15 09:18:47Z  STAMPED   anna.klein@stamply.io     APPROVED · stage 1/4 · note: "Ops signed off."
-2026-10-15 09:31:12Z  STAMPED   ryo.sato@stamply.io       APPROVED · stage 2/4 · attach: 3-quote-comparison.pdf
-2026-10-15 09:41:55Z  VIEWED    mara.vossberg@stamply.io  stage 3/4 — awaiting decision
-2026-10-15 13:42:18Z  ─        ─                         session active · awaiting CFO digital stamp …▌</pre>
-        </div>
-
-        <!-- HISTORY MINI TABLE SECTION -->
-        <div id="history-table-section" class="mt-6 brut bg-[#FFFFFF] overflow-hidden">
-          <div class="flex items-center justify-between p-4 border-b-[3px] border-[#121210]">
-            <div class="font-display font-bold text-lg flex items-center gap-2"><i class="ti ti-archive text-xl"></i>RECENTLY STAMPED TRANSACTIONS</div>
-            <button onclick="exportCSV()" class="text-xs font-mono underline hover:text-[#2E8C42] font-bold">EXPORT CSV (2,481) →</button>
-          </div>
-          <div class="overflow-x-auto">
-            <table class="w-full font-mono text-xs sm:text-sm">
-              <thead class="bg-[#CFE8D6]">
-                <tr class="border-b-[3px] border-[#121210]">
-                  <th class="text-left p-3 text-xs tracking-widest font-bold">ID</th>
-                  <th class="text-left p-3 text-xs tracking-widest font-bold">VENDOR</th>
-                  <th class="text-right p-3 text-xs tracking-widest font-bold">AMOUNT</th>
-                  <th class="text-left p-3 text-xs tracking-widest font-bold">ACTOR</th>
-                  <th class="text-left p-3 text-xs tracking-widest font-bold">TIMESTAMP</th>
-                  <th class="text-right p-3 text-xs tracking-widest font-bold">STATUS</th>
-                </tr>
-              </thead>
-              <tbody id="history-tbody">
-                <tr class="border-b border-[#121210]/30"><td class="p-3 font-bold">EXP-9912</td><td class="p-3">Linear B.V.</td><td class="text-right p-3">$1,440.00</td><td class="p-3">M. Vossberg</td><td class="p-3 opacity-70">15 OCT · 08:21</td><td class="text-right p-3"><span class="stamp text-[#2E8C42] text-[10px]" style="transform:rotate(-2deg);">APPROVED</span></td></tr>
-                <tr class="border-b border-[#121210]/30"><td class="p-3 font-bold">PO-2025-0417</td><td class="p-3">Kuehne+Nagel</td><td class="text-right p-3">$18,250.00</td><td class="p-3">R. Sato</td><td class="p-3 opacity-70">14 OCT · 17:04</td><td class="text-right p-3"><span class="stamp text-[#C03A3A] text-[10px]" style="transform:rotate(2deg);">REJECTED</span></td></tr>
-                <tr class="border-b border-[#121210]/30"><td class="p-3 font-bold">EXP-9908</td><td class="p-3">DoorDash for Teams</td><td class="text-right p-3">$482.16</td><td class="p-3">A. Klein</td><td class="p-3 opacity-70">14 OCT · 14:48</td><td class="text-right p-3"><span class="stamp text-[#E8A030] text-[10px]" style="transform:rotate(-2deg);">NEEDS DETAIL</span></td></tr>
-                <tr><td class="p-3 font-bold">PO-2025-0416</td><td class="p-3">Notion Labs Inc.</td><td class="text-right p-3">$9,720.00</td><td class="p-3">M. Vossberg</td><td class="p-3 opacity-70">14 OCT · 11:12</td><td class="text-right p-3"><span class="stamp text-[#2E8C42] text-[10px]" style="transform:rotate(-2deg);">APPROVED</span></td></tr>
-              </tbody>
-            </table>
-          </div>
-        </div>
-
-        <!-- WORKFLOW BUILDER STAGES -->
-        <div id="workflow-builder-section" class="mt-6 brut bg-[#FFFFFF] overflow-hidden">
-          <div class="flex items-center justify-between p-4 border-b-[3px] border-[#121210] flex-wrap gap-2">
-            <div>
-              <div class="font-display font-bold text-lg flex items-center gap-2"><i class="ti ti-git-merge text-[#2E8C42]"></i>WORKFLOW BUILDER — "CapEx ≥ $25k"</div>
-              <div class="text-xs font-mono opacity-60 mt-0.5">Drag & drop policy pipeline · 4 stages active · 142 requests routed</div>
-            </div>
-            <div class="flex gap-2">
-              <button onclick="addWorkflowStage()" class="brut-sm bg-[#FFFFFF] px-3 py-1 text-xs font-display font-bold btn-press">+ STAGE</button>
-              <button onclick="publishWorkflow()" class="brut-sm bg-[#2E8C42] text-white px-3 py-1 text-xs font-display font-bold btn-press">PUBLISH</button>
-            </div>
-          </div>
-          <div class="polka p-6 overflow-x-auto">
-            <div class="flex items-center gap-2 min-w-[720px]" id="workflow-nodes">
-              <div class="brut bg-[#CFE8D6] px-4 py-3 shrink-0 cursor-grab">
-                <div class="font-mono text-[9px] opacity-60">TRIGGER</div>
-                <div class="font-display font-bold text-sm">New Request</div>
-              </div>
-              <div class="flex items-center"><div class="w-4 h-1 bg-[#121210]"></div><div class="w-0 h-0" style="border-top:5px solid transparent;border-bottom:5px solid transparent;border-left:6px solid #121210"></div></div>
-              <div class="brut bg-[#FFFFFF] px-4 py-3 shrink-0 cursor-grab">
-                <div class="font-mono text-[9px] opacity-60">STAGE 1 · MGR</div>
-                <div class="font-display font-bold text-sm">Direct Manager</div>
-                <div class="text-[9px] font-mono opacity-60">SLA: 24h</div>
-              </div>
-              <div class="flex items-center"><div class="w-4 h-1 bg-[#121210]"></div><div class="w-0 h-0" style="border-top:5px solid transparent;border-bottom:5px solid transparent;border-left:6px solid #121210"></div></div>
-              <div class="brut bg-[#FFFFFF] px-4 py-3 shrink-0 cursor-grab">
-                <div class="font-mono text-[9px] opacity-60">STAGE 2 · FIN</div>
-                <div class="font-display font-bold text-sm">Fin Controller</div>
-                <div class="text-[9px] font-mono opacity-60">SLA: 48h</div>
-              </div>
-              <div class="flex items-center"><div class="w-4 h-1 bg-[#121210]"></div><div class="w-0 h-0" style="border-top:5px solid transparent;border-bottom:5px solid transparent;border-left:6px solid #121210"></div></div>
-              <div class="brut bg-[#E8A030] px-4 py-3 shrink-0 cursor-grab">
-                <div class="font-mono text-[9px] opacity-80">STAGE 3 · EXEC</div>
-                <div class="font-display font-bold text-sm">CFO Review</div>
-                <div class="text-[9px] font-mono">SLA: 72h</div>
-              </div>
-              <div class="flex items-center"><div class="w-4 h-1 bg-[#121210]"></div><div class="w-0 h-0" style="border-top:5px solid transparent;border-bottom:5px solid transparent;border-left:6px solid #121210"></div></div>
-              <div class="brut bg-white px-4 py-3 border-dashed shrink-0 opacity-70">
-                <div class="font-mono text-[9px] opacity-60">STAGE 4 · COND.</div>
-                <div class="font-display font-bold text-sm">Board (≥ $50k)</div>
-                <div class="text-[9px] font-mono">Conditional</div>
-              </div>
-              <div class="flex items-center"><div class="w-4 h-1 bg-[#121210]"></div><div class="w-0 h-0" style="border-top:5px solid transparent;border-bottom:5px solid transparent;border-left:6px solid #2E8C42"></div></div>
-              <div class="brut bg-[#2E8C42] text-white px-4 py-3 shrink-0">
-                <div class="font-mono text-[9px] opacity-80">OUTCOME</div>
-                <div class="font-display font-bold text-sm">Auto-Pay & Ledger</div>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <!-- ESCALATION QUEUE STRIP -->
-        <div id="escalation-section" class="mt-6 brut overflow-hidden stripes-amber p-1">
-          <div class="bg-[#CFE8D6] p-4">
-            <div class="flex items-center justify-between mb-4 flex-wrap gap-2">
-              <div class="font-display font-bold text-lg flex items-center gap-2"><i class="ti ti-alert-triangle text-[#C03A3A]"></i>ESCALATION QUEUE · 3 PAST SLA</div>
-              <span class="font-mono text-[10px] opacity-60">AUTO-ESCALATES AT +24H MARK</span>
-            </div>
-            <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
-              <div class="brut bg-white p-4 border-[#C03A3A] cursor-pointer" onclick="selectPO(2)">
-                <div class="flex justify-between items-start">
-                  <span class="tag bg-[#C03A3A] text-white">+52H LATE</span>
-                  <i class="ti ti-flame text-xl text-[#C03A3A]"></i>
-                </div>
-                <div class="font-display font-bold text-base mt-2">Brunswick Catering</div>
-                <div class="font-mono font-bold text-lg mt-1 text-[#C03A3A]">$12,480.50</div>
-                <div class="text-xs opacity-60 mt-1">Stuck at: Fin Controller</div>
-              </div>
-
-              <div class="brut bg-white p-4 border-[#E8A030] cursor-pointer">
-                <div class="flex justify-between items-start">
-                  <span class="tag bg-[#E8A030]">+18H LATE</span>
-                  <i class="ti ti-alert-triangle text-xl text-[#E8A030]"></i>
-                </div>
-                <div class="font-display font-bold text-base mt-2">CloudFlare Ent.</div>
-                <div class="font-mono font-bold text-lg mt-1">$8,200.00</div>
-                <div class="text-xs opacity-60 mt-1">Stuck at: Director</div>
-              </div>
-
-              <div class="brut bg-white p-4 border-[#C03A3A] cursor-pointer">
-                <div class="flex justify-between items-start">
-                  <span class="tag bg-[#C03A3A] text-white">+71H LATE</span>
-                  <i class="ti ti-flame text-xl text-[#C03A3A]"></i>
-                </div>
-                <div class="font-display font-bold text-base mt-2">Bosch Mobility</div>
-                <div class="font-mono font-bold text-lg mt-1 text-[#C03A3A]">$61,440.00</div>
-                <div class="text-xs opacity-60 mt-1">Stuck at: Board review</div>
-              </div>
             </div>
           </div>
         </div>
@@ -672,424 +586,271 @@
   </main>
 </div>
 
-<!-- ==========================================
-     LOGIC: THREE.JS 3D ENGINE, HOTKEYS & AUDIO
-     ========================================== -->
+<!-- ========================================================
+     JAVASCRIPT: THREE.JS 3D ENGINE, SWITCHER & HOTKEYS
+     ======================================================== */ -->
 <script>
+  let viewMode = 'widget';
+
+  function setViewMode(mode) {
+    viewMode = mode;
+    const wSection = document.getElementById('standalone-widget-view');
+    const fSection = document.getElementById('full-dashboard-view');
+    const btnW = document.getElementById('tab-btn-widget');
+    const btnF = document.getElementById('tab-btn-full');
+
+    if (mode === 'widget') {
+      wSection.classList.remove('hidden');
+      fSection.classList.add('hidden');
+      btnW.className = "px-3 py-1 font-mono text-xs font-bold border border-white bg-[#2E8C42] text-white transition-all";
+      btnF.className = "px-3 py-1 font-mono text-xs font-bold border border-white/30 bg-transparent text-slate-300 hover:text-white transition-all";
+      setTimeout(initWidget3D, 50);
+    } else {
+      wSection.classList.add('hidden');
+      fSection.classList.remove('hidden');
+      btnF.className = "px-3 py-1 font-mono text-xs font-bold border border-white bg-[#2E8C42] text-white transition-all";
+      btnW.className = "px-3 py-1 font-mono text-xs font-bold border border-white/30 bg-transparent text-slate-300 hover:text-white transition-all";
+      setTimeout(initSidebar3D, 50);
+    }
+  }
+
   /* ========================================================
-     1. THREE.JS 3D KINETIC AUDIT SEAL
+     3D THREE.JS WEBGL RENDERER
      ======================================================== */
-  const sealContainer = document.getElementById('three-seal-container');
-  const scene = new THREE.Scene();
-  const camera = new THREE.PerspectiveCamera(45, sealContainer.clientWidth / sealContainer.clientHeight, 0.1, 100);
-  const renderer = new THREE.WebGLRenderer({ alpha: true, antialias: true });
-  renderer.setSize(sealContainer.clientWidth, sealContainer.clientHeight);
-  renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
-  renderer.domElement.id = 'seal-3d-canvas';
-  sealContainer.appendChild(renderer.domElement);
-
-  const tokenGroup = new THREE.Group();
-  scene.add(tokenGroup);
-
-  // Metallic materials
+  let sealScene, sealCamera, sealRenderer, tokenGroup, brassMaterial;
   const coinColors = [0x2E8C42, 0x121210, 0xE8A030, 0xC03A3A, 0x00A3FF];
   let colorIdx = 0;
 
-  const brassMaterial = new THREE.MeshStandardMaterial({
-    color: coinColors[0],
-    metalness: 0.85,
-    roughness: 0.25
-  });
+  function create3DScene(mountId) {
+    const mount = document.getElementById(mountId);
+    if (!mount) return;
+    mount.innerHTML = '';
 
-  const rimMaterial = new THREE.MeshStandardMaterial({
-    color: 0x121210,
-    metalness: 0.95,
-    roughness: 0.2
-  });
+    sealScene = new THREE.Scene();
+    sealCamera = new THREE.PerspectiveCamera(45, mount.clientWidth / mount.clientHeight, 0.1, 100);
+    sealRenderer = new THREE.WebGLRenderer({ alpha: true, antialias: true });
+    sealRenderer.setSize(mount.clientWidth, mount.clientHeight);
+    sealRenderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+    mount.appendChild(sealRenderer.domElement);
 
-  // Cylinder Token
-  const cylinderGeo = new THREE.CylinderGeometry(1.65, 1.65, 0.35, 36);
-  const sealMesh = new THREE.Mesh(cylinderGeo, brassMaterial);
-  tokenGroup.add(sealMesh);
+    tokenGroup = new THREE.Group();
+    sealScene.add(tokenGroup);
 
-  // Rim ring
-  const torusGeo = new THREE.TorusGeometry(1.7, 0.09, 16, 64);
-  const rimMesh = new THREE.Mesh(torusGeo, rimMaterial);
-  rimMesh.rotation.x = Math.PI / 2;
-  tokenGroup.add(rimMesh);
+    brassMaterial = new THREE.MeshStandardMaterial({
+      color: coinColors[colorIdx],
+      metalness: 0.85,
+      roughness: 0.25
+    });
 
-  // Internal Stamp Motif (Octagram geometry)
-  const starGeo = new THREE.RingGeometry(0.5, 0.9, 8);
-  const starMat = new THREE.MeshBasicMaterial({ color: 0xFFFFFF, side: THREE.DoubleSide });
-  const starMesh = new THREE.Mesh(starGeo, starMat);
-  starMesh.position.y = 0.18;
-  starMesh.rotation.x = Math.PI / 2;
-  tokenGroup.add(starMesh);
+    const rimMaterial = new THREE.MeshStandardMaterial({
+      color: 0x121210,
+      metalness: 0.95,
+      roughness: 0.2
+    });
 
-  // Lighting
-  const light1 = new THREE.DirectionalLight(0xffffff, 2.5);
-  light1.position.set(5, 5, 5);
-  scene.add(light1);
+    // Cylinder Token
+    const cylinderGeo = new THREE.CylinderGeometry(1.65, 1.65, 0.35, 36);
+    const sealMesh = new THREE.Mesh(cylinderGeo, brassMaterial);
+    tokenGroup.add(sealMesh);
 
-  const light2 = new THREE.PointLight(0x2E8C42, 3, 10);
-  light2.position.set(-3, -3, 2);
-  scene.add(light2);
+    // Rim ring
+    const torusGeo = new THREE.TorusGeometry(1.7, 0.09, 16, 64);
+    const rimMesh = new THREE.Mesh(torusGeo, rimMaterial);
+    rimMesh.rotation.x = Math.PI / 2;
+    tokenGroup.add(rimMesh);
 
-  const amb = new THREE.AmbientLight(0xffffff, 0.85);
-  scene.add(amb);
+    // Octagram geometry stamp
+    const starGeo = new THREE.RingGeometry(0.5, 0.9, 8);
+    const starMat = new THREE.MeshBasicMaterial({ color: 0xFFFFFF, side: THREE.DoubleSide });
+    const starMesh = new THREE.Mesh(starGeo, starMat);
+    starMesh.position.y = 0.18;
+    starMesh.rotation.x = Math.PI / 2;
+    tokenGroup.add(starMesh);
 
-  camera.position.z = 4.8;
-  tokenGroup.rotation.x = 0.45;
+    // Lights
+    const l1 = new THREE.DirectionalLight(0xffffff, 2.5);
+    l1.position.set(5, 5, 5);
+    sealScene.add(l1);
 
-  // Mouse Interaction for 3D Seal
-  let isDragging = false;
-  let prevMouseX = 0, prevMouseY = 0;
+    const l2 = new THREE.PointLight(0x2E8C42, 3, 10);
+    l2.position.set(-3, -3, 2);
+    sealScene.add(l2);
 
-  sealContainer.addEventListener('mousedown', (e) => {
-    isDragging = true;
-    prevMouseX = e.clientX;
-    prevMouseY = e.clientY;
-  });
+    sealScene.add(new THREE.AmbientLight(0xffffff, 0.85));
 
-  window.addEventListener('mouseup', () => { isDragging = false; });
+    sealCamera.position.z = 4.8;
+    tokenGroup.rotation.x = 0.45;
 
-  window.addEventListener('mousemove', (e) => {
-    if (!isDragging) return;
-    const deltaX = e.clientX - prevMouseX;
-    const deltaY = e.clientY - prevMouseY;
-    tokenGroup.rotation.y += deltaX * 0.02;
-    tokenGroup.rotation.x += deltaY * 0.02;
-    prevMouseX = e.clientX;
-    prevMouseY = e.clientY;
-  });
+    // Drag interaction
+    let isDragging = false;
+    let prevX = 0, prevY = 0;
 
-  window.addEventListener('resize', () => {
-    if (!sealContainer) return;
-    camera.aspect = sealContainer.clientWidth / sealContainer.clientHeight;
-    camera.updateProjectionMatrix();
-    renderer.setSize(sealContainer.clientWidth, sealContainer.clientHeight);
-  });
-
-  function animateSeal() {
-    requestAnimationFrame(animateSeal);
-    if (!isDragging) {
-      tokenGroup.rotation.y += 0.015;
-    }
-    renderer.render(scene, camera);
+    mount.addEventListener('mousedown', (e) => {
+      isDragging = true;
+      prevX = e.clientX;
+      prevY = e.clientY;
+    });
+    window.addEventListener('mouseup', () => { isDragging = false; });
+    window.addEventListener('mousemove', (e) => {
+      if (!isDragging) return;
+      tokenGroup.rotation.y += (e.clientX - prevX) * 0.02;
+      tokenGroup.rotation.x += (e.clientY - prevY) * 0.02;
+      prevX = e.clientX;
+      prevY = e.clientY;
+    });
   }
-  animateSeal();
+
+  function renderLoop() {
+    requestAnimationFrame(renderLoop);
+    if (tokenGroup) tokenGroup.rotation.y += 0.015;
+    if (sealRenderer && sealScene && sealCamera) {
+      sealRenderer.render(sealScene, sealCamera);
+    }
+  }
+  renderLoop();
+
+  function initWidget3D() { create3DScene('widget-3d-seal'); }
+  function initSidebar3D() { create3DScene('sidebar-3d-seal'); }
 
   function switch3DMaterial() {
     colorIdx = (colorIdx + 1) % coinColors.length;
-    brassMaterial.color.set(coinColors[colorIdx]);
-    light2.color.set(coinColors[colorIdx]);
-    showToast("3D Shader Shift", "Seal material color refreshed");
-    playSynthTone(600, 0.08);
-  }
-
-  function trigger3DAction(label) {
-    applyDecision(label, '#2E8C42');
+    if (brassMaterial) brassMaterial.color.set(coinColors[colorIdx]);
   }
 
   /* ========================================================
-     2. MOCK PO DATABASE & DYNAMIC DOCUMENT SWITCHER
+     DATA & WIDGET PAGINATION
      ======================================================== */
   const PO_DATA = [
     {
       id: "PO-2025-0418",
       vendor: "Helvetica Logistics Co.",
+      desc: "Q1 Warehouse Rack Replacement · 14 items",
+      category: "CAPEX · WAREHOUSE",
+      sla: "3D SLA LEFT",
+      amount: "$48,920.00",
       location: "Zurich · CH-8005",
-      category: "CapEx · Warehouse",
       due: "17 MAR 2025",
-      total: "$48,920.00",
-      subtotal: "48,920.00",
-      items: [
-        { desc: "Heavy-duty pallet racking, 4-tier", qty: 24, unit: "1,280.00", amount: "30,720.00" },
-        { desc: "Anchor bolts (M16) — case of 50", qty: 12, unit: "86.40", amount: "1,036.80" },
-        { desc: "Installation labor · 3-day crew", qty: 1, unit: "14,800.00", amount: "14,800.00" },
-        { desc: "Freight + customs handling", qty: 1, unit: "2,363.20", amount: "2,363.20" }
-      ]
+      subtotal: "48,920.00"
     },
     {
       id: "EXP-9921",
       vendor: "Figma Inc.",
-      location: "San Francisco · CA-94103",
-      category: "Software · Design Seats",
+      desc: "Annual team seat renewal · 22 seats",
+      category: "SOFTWARE · SEATS",
+      sla: "ON SCHEDULE",
+      amount: "$3,960.00",
+      location: "San Francisco · CA",
       due: "24 MAR 2025",
-      total: "$3,960.00",
-      subtotal: "3,960.00",
-      items: [
-        { desc: "Figma Enterprise License (Annual)", qty: 22, unit: "180.00", amount: "3,960.00" }
-      ]
+      subtotal: "3,960.00"
     },
     {
       id: "PO-2025-0402",
       vendor: "Brunswick Catering Ltd.",
-      location: "London · EC2A 4NE",
-      category: "People Ops · Events",
-      due: "11 MAR 2025 (PAST SLA)",
-      total: "$12,480.50",
-      subtotal: "12,480.50",
-      items: [
-        { desc: "Off-site Catering & Beverage package", qty: 140, unit: "75.00", amount: "10,500.00" },
-        { desc: "Staffing & service surcharge", qty: 1, unit: "1,980.50", amount: "1,980.50" }
-      ]
+      desc: "Off-site quarterly all-hands · Q1",
+      category: "EVENTS · OPS",
+      sla: "⚠ +52H PAST SLA",
+      amount: "$12,480.50",
+      location: "London · EC2A",
+      due: "11 MAR 2025",
+      subtotal: "12,480.50"
     },
     {
       id: "EXP-9918",
       vendor: "AWS Cloud Infrastructure",
-      location: "Seattle · WA-98109",
-      category: "Infrastructure · Compute",
-      due: "Auto-Debit (ACH)",
-      total: "$27,304.18",
-      subtotal: "27,304.18",
-      items: [
-        { desc: "EC2 & EKS Kubernetes Cluster Usage", qty: 1, unit: "18,420.00", amount: "18,420.00" },
-        { desc: "Aurora PostgreSQL Multi-AZ Storage", qty: 1, unit: "6,884.18", amount: "6,884.18" },
-        { desc: "CloudFront CDN Data Egress", qty: 1, unit: "2,000.00", amount: "2,000.00" }
-      ]
+      desc: "Production compute clusters · auto-billed",
+      category: "INFRA · COMPUTE",
+      sla: "AUTO-ACH",
+      amount: "$27,304.18",
+      location: "Seattle · WA",
+      due: "Net-15",
+      subtotal: "27,304.18"
     }
   ];
 
   let currentPOIndex = 0;
 
-  function selectPO(index, cardEl) {
-    currentPOIndex = index;
-    const po = PO_DATA[index];
+  function updateWidgetDisplay() {
+    const po = PO_DATA[currentPOIndex];
+    document.getElementById('w-id').innerText = po.id;
+    document.getElementById('w-vendor').innerText = po.vendor;
+    document.getElementById('w-desc').innerText = po.desc;
+    document.getElementById('w-category').innerText = po.category;
+    document.getElementById('w-sla').innerText = po.sla;
+    document.getElementById('w-amount').innerText = po.amount;
+    document.getElementById('widget-pagination').innerText = `${currentPOIndex + 1} of ${PO_DATA.length}`;
 
-    // Highlight active card
-    document.querySelectorAll('.req-card').forEach(c => c.classList.remove('active-card'));
-    if (cardEl) cardEl.classList.add('active-card');
-
-    // Update Document DOM
-    document.getElementById('doc-title').innerText = po.id.startsWith('PO') ? 'PURCHASE ORDER' : 'EXPENSE REIMBURSEMENT';
-    document.getElementById('doc-id-date').innerText = `${po.id} · ISSUED 14 MAR 2025`;
+    // Full view sync
     document.getElementById('doc-vendor').innerText = po.vendor;
-    document.getElementById('doc-location').innerText = po.location;
     document.getElementById('doc-category').innerText = po.category;
-    document.getElementById('doc-due').innerText = po.due;
-    document.getElementById('doc-total').innerText = po.total;
-    document.getElementById('doc-subtotal').innerText = po.subtotal;
+    document.getElementById('doc-total').innerText = po.amount;
+  }
 
-    // Line items
-    const tbody = document.getElementById('line-items-body');
-    tbody.innerHTML = '';
-    po.items.forEach(item => {
-      const tr = document.createElement('tr');
-      tr.className = "border-b border-[#121210]/20";
-      tr.innerHTML = `
-        <td class="py-2.5">${item.desc}</td>
-        <td class="text-right">${item.qty}</td>
-        <td class="text-right">${item.unit}</td>
-        <td class="text-right">${item.amount}</td>
-      `;
-      tbody.appendChild(tr);
-    });
+  function widgetNextPO() {
+    currentPOIndex = (currentPOIndex + 1) % PO_DATA.length;
+    updateWidgetDisplay();
+    playSynthTone(500, 0.05);
+  }
 
-    // Clear previous big stamp watermark
-    document.getElementById('stamp-drop').innerHTML = '';
+  function widgetPrevPO() {
+    currentPOIndex = (currentPOIndex - 1 + PO_DATA.length) % PO_DATA.length;
+    updateWidgetDisplay();
+    playSynthTone(500, 0.05);
+  }
 
-    // Audio click
-    playSynthTone(480, 0.08);
-
-    // GSAP entrance flash
-    gsap.from('#invoice', { y: 8, opacity: 0.9, duration: 0.25, ease: 'power2.out' });
+  function selectPO(idx, card) {
+    currentPOIndex = idx;
+    updateWidgetDisplay();
+    document.querySelectorAll('.req-card').forEach(c => c.classList.remove('active-card'));
+    if (card) card.classList.add('active-card');
   }
 
   /* ========================================================
-     3. STAMP DECISION ENGINE, CELEBRATION & SOUND FX
+     STAMP DECISION ACTION & AUDIO
      ======================================================== */
   let audioCtx = null;
-  function playSynthTone(freq, duration) {
+  function playSynthTone(freq, dur) {
     try {
       if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
       if (audioCtx.state === 'suspended') audioCtx.resume();
       const osc = audioCtx.createOscillator();
-      const gain = audioCtx.createGain();
+      const g = audioCtx.createGain();
       osc.type = 'triangle';
       osc.frequency.setValueAtTime(freq, audioCtx.currentTime);
-      gain.gain.setValueAtTime(0.08, audioCtx.currentTime);
-      gain.gain.exponentialRampToValueAtTime(0.0001, audioCtx.currentTime + duration);
-      osc.connect(gain);
-      gain.connect(audioCtx.destination);
+      g.gain.setValueAtTime(0.08, audioCtx.currentTime);
+      g.gain.exponentialRampToValueAtTime(0.0001, audioCtx.currentTime + dur);
+      osc.connect(g);
+      g.connect(audioCtx.destination);
       osc.start();
-      osc.stop(audioCtx.currentTime + duration);
+      osc.stop(audioCtx.currentTime + dur);
     } catch(e) {}
   }
 
   function applyDecision(label, color) {
-    const drop = document.getElementById('stamp-drop');
-    const invoice = document.getElementById('invoice');
-    drop.innerHTML = '';
-
-    const el = document.createElement('div');
-    el.className = 'big-stamp';
-    el.textContent = label;
-    el.style.color = color;
-    drop.appendChild(el);
-
-    // Audio mechanical thud
     playSynthTone(120, 0.25);
-    setTimeout(() => playSynthTone(400, 0.1), 80);
+    setTimeout(() => playSynthTone(420, 0.1), 80);
 
-    // Confetti on approve
     if (label === 'APPROVED' && typeof confetti === 'function') {
-      confetti({
-        particleCount: 80,
-        spread: 60,
-        origin: { y: 0.6 },
-        colors: ['#2E8C42', '#CFE8D6', '#121210', '#E8A030']
-      });
+      confetti({ particleCount: 70, spread: 60, origin: { y: 0.6 } });
     }
 
-    // Stamp Animation
-    gsap.fromTo(el, 
-      { scale: 3.2, rotation: -20, opacity: 0 },
-      { scale: 1, rotation: -7, opacity: 0.88, duration: 0.45, ease: 'back.out(2)' }
-    );
+    if (tokenGroup) {
+      tokenGroup.rotation.y += Math.PI * 2;
+      if (brassMaterial) brassMaterial.color.set(color === '#2E8C42' ? 0x2E8C42 : 0xC03A3A);
+    }
 
-    // Invoice physical shake
-    gsap.to(invoice, {
-      x: -6,
-      repeat: 3,
-      yoyo: true,
-      duration: 0.06,
-      ease: 'power1.inOut',
-      onComplete: () => { gsap.set(invoice, { x: 0 }); }
-    });
-
-    // Animate 3D Seal spin burst
-    tokenGroup.rotation.y += Math.PI * 2;
-    brassMaterial.color.set(color === '#2E8C42' ? 0x2E8C42 : (color === '#C03A3A' ? 0xC03A3A : 0xE8A030));
-
-    // Append to Audit Terminal
-    const po = PO_DATA[currentPOIndex];
-    const log = document.getElementById('audit-terminal-log');
-    const now = new Date().toISOString().replace('T', ' ').substring(0, 19) + 'Z';
-    log.innerText += `\n${now}  DECISION  mara.vossberg@stamply.io  ${label} · ${po.id} · ${po.total}`;
-    log.scrollTop = log.scrollHeight;
-
-    // Toast
-    showToast(label, `${po.id} (${po.vendor}) has been marked as ${label}`);
-
-    // Increment counter
-    const countEl = document.getElementById('stamped-count');
-    countEl.innerText = parseInt(countEl.innerText) + 1;
+    alert(`[APPROVA DECISION] ${label} applied to ${PO_DATA[currentPOIndex].id}!`);
+    widgetNextPO();
   }
 
-  function showToast(title, desc) {
-    const toast = document.getElementById('toast');
-    document.getElementById('toast-title').innerText = title;
-    document.getElementById('toast-desc').innerText = desc;
-    toast.style.transform = 'translateY(0)';
-    toast.style.opacity = '1';
-    setTimeout(() => {
-      toast.style.transform = 'translateY(-100px)';
-      toast.style.opacity = '0';
-    }, 2800);
-  }
-
-  /* ========================================================
-     4. HOTKEY DISPATCHER
-     ======================================================== */
   window.addEventListener('keydown', (e) => {
-    // Cmd/Ctrl + Enter -> Approve
     if ((e.metaKey || e.ctrlKey) && e.key === 'Enter') {
       e.preventDefault();
       applyDecision('APPROVED', '#2E8C42');
     }
-    // Cmd/Ctrl + Backspace -> Reject
-    if ((e.metaKey || e.ctrlKey) && e.key === 'Backspace') {
-      e.preventDefault();
-      applyDecision('REJECTED', '#C03A3A');
-    }
-    // Cmd/Ctrl + D -> Needs Detail
-    if ((e.metaKey || e.ctrlKey) && (e.key === 'd' || e.key === 'D')) {
-      e.preventDefault();
-      applyDecision('NEEDS DETAIL', '#E8A030');
-    }
-    // Cmd/Ctrl + K -> Focus Search
-    if ((e.metaKey || e.ctrlKey) && (e.key === 'k' || e.key === 'K')) {
-      e.preventDefault();
-      document.getElementById('search-input').focus();
-    }
   });
 
-  function scrollToSection(id) {
-    const el = document.getElementById(id);
-    if (el) el.scrollIntoView({ behavior: 'smooth' });
-  }
-
-  function filterQueue(type) {
-    playSynthTone(550, 0.05);
-    const cards = document.querySelectorAll('.req-card');
-    cards.forEach(card => {
-      const text = card.innerText;
-      if (type === 'all') card.style.display = 'block';
-      else if (type === 'po' && text.includes('PO-')) card.style.display = 'block';
-      else if (type === 'expense' && text.includes('EXP-')) card.style.display = 'block';
-      else if (type === 'escalated' && text.includes('ESCALATED')) card.style.display = 'block';
-      else card.style.display = 'none';
-    });
-  }
-
-  function filterSearch(query) {
-    const q = query.toLowerCase();
-    document.querySelectorAll('.req-card').forEach(card => {
-      card.style.display = card.innerText.toLowerCase().includes(q) ? 'block' : 'none';
-    });
-  }
-
-  function promptNewRequest() {
-    const vendor = prompt('Enter Vendor Name:', 'Anthropic PBC');
-    if (!vendor) return;
-    const amount = prompt('Enter Amount USD:', '6,800.00');
-    if (!amount) return;
-
-    PO_DATA.unshift({
-      id: "PO-2025-" + Math.floor(1000 + Math.random() * 9000),
-      vendor: vendor,
-      location: "San Francisco · CA",
-      category: "AI & Software · Compute",
-      due: "28 MAR 2025",
-      total: "$" + amount,
-      subtotal: amount,
-      items: [
-        { desc: "API Enterprise Compute Allocation", qty: 1, unit: amount, amount: amount }
-      ]
-    });
-    showToast("Request Enqueued", `${PO_DATA[0].id} added to Approver Queue`);
-    selectPO(0);
-  }
-
-  function addWorkflowStage() {
-    const name = prompt("Stage Name:", "Legal Counsel Review");
-    if (!name) return;
-    const container = document.getElementById('workflow-nodes');
-    const div = document.createElement('div');
-    div.className = "brut bg-white px-4 py-3 shrink-0 cursor-grab";
-    div.innerHTML = `
-      <div class="font-mono text-[9px] opacity-60">CUSTOM STAGE</div>
-      <div class="font-display font-bold text-sm">${name}</div>
-      <div class="text-[9px] font-mono opacity-60">SLA: 24h</div>
-    `;
-    container.insertBefore(div, container.lastElementChild.previousElementSibling);
-    showToast("Stage Added", `Appended ${name} to active workflow pipeline.`);
-  }
-
-  function publishWorkflow() {
-    showToast("Workflow Published", "CapEx ≥ $25k pipeline is now enforcing in production.");
-    playSynthTone(750, 0.15);
-  }
-
-  function exportCSV() {
-    showToast("Export Initiated", "Generating CSV of 2,481 audit records...");
-    playSynthTone(600, 0.1);
-  }
-
-  // Initial Entrance Animation
-  gsap.from('.req-card', { opacity: 0, y: 16, duration: 0.4, stagger: 0.07, ease: 'power2.out' });
-  gsap.from('#invoice', { opacity: 0, y: 20, duration: 0.5, ease: 'power2.out', delay: 0.1 });
+  // Init default widget mode
+  setTimeout(initWidget3D, 50);
 </script>
 </body>
 </html>
