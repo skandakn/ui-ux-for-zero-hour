@@ -1,653 +1,969 @@
-<!DOCTYPE html>
-<html lang="en" class="dark scroll-smooth">
+<!doctype html>
+<html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>AETHERIA // Zero Hour 3D UI/UX Experience</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>APPROVA // Brutalist Finance Approval Dashboard & 3D Audit Widget</title>
   <!-- Tailwind CSS CDN -->
   <script src="https://cdn.tailwindcss.com"></script>
-  <!-- Three.js CDN -->
+  <!-- Three.js CDN for 3D Elements -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
-  <!-- Lucide Icons -->
+  <!-- Tabler & Lucide Icons -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont/tabler-icons.min.css">
   <script src="https://unpkg.com/lucide@latest"></script>
-  <!-- Google Fonts -->
+  <!-- GSAP & AnimeJS -->
+  <script src="https://cdn.jsdelivr.net/npm/gsap@3/dist/gsap.min.js"></script>
+  <!-- Google Fonts: Archivo, Hanken Grotesk, Space Mono -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
-  <script>
-    tailwind.config = {
-      darkMode: 'class',
-      theme: {
-        extend: {
-          fontFamily: {
-            sans: ['"Plus Jakarta Sans"', 'sans-serif'],
-            display: ['"Space Grotesk"', 'sans-serif']
-          },
-          colors: {
-            brand: {
-              cyan: '#00F0FF',
-              purple: '#8B5CF6',
-              violet: '#6366F1',
-              neon: '#10B981'
-            }
-          },
-          animation: {
-            'pulse-slow': 'pulse 4s cubic-bezier(0.4, 0, 0.6, 1) infinite',
-            'float': 'float 6s ease-in-out infinite',
-            'glow': 'glow 3s ease-in-out infinite alternate',
-          },
-          keyframes: {
-            float: {
-              '0%, 100%': { transform: 'translateY(0px)' },
-              '50%': { transform: 'translateY(-12px)' },
-            },
-            glow: {
-              '0%': { filter: 'drop-shadow(0 0 15px rgba(0,240,255,0.4))' },
-              '100%': { filter: 'drop-shadow(0 0 35px rgba(139,92,246,0.7))' }
-            }
-          }
-        }
-      }
-    }
-  </script>
+  <link href="https://fonts.googleapis.com/css2?family=Archivo:wght@500;600;700;800;900&family=Hanken+Grotesk:wght@400;500;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+
   <style>
-    /* Custom Scrollbar & Glassmorphism styles */
-    ::-webkit-scrollbar { width: 8px; }
-    ::-webkit-scrollbar-track { background: #07090e; }
-    ::-webkit-scrollbar-thumb { background: #1e293b; border-radius: 4px; }
-    ::-webkit-scrollbar-thumb:hover { background: #334155; }
+    body { font-family: 'Hanken Grotesk', sans-serif; background:#CFE8D6; color:#121210; margin:0; }
+    .font-display { font-family: 'Archivo', sans-serif; letter-spacing:-0.01em; }
+    .font-mono { font-family: 'Space Mono', monospace; font-variant-numeric: tabular-nums; }
     
-    .glass-panel {
-      background: rgba(15, 23, 42, 0.65);
-      backdrop-filter: blur(20px);
-      -webkit-backdrop-filter: blur(20px);
-      border: 1px solid rgba(255, 255, 255, 0.08);
+    /* Neo-Brutalist Core System */
+    .brut { border: 3px solid #121210; box-shadow: 4px 4px 0 #121210; }
+    .brut-lg { border: 3px solid #121210; box-shadow: 6px 6px 0 #121210; }
+    .brut-sm { border: 2px solid #121210; box-shadow: 3px 3px 0 #121210; }
+    .brut-card { border: 3px solid #121210; box-shadow: 4px 4px 0 #121210; background:#FFFFFF; transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1); }
+    .brut-card:hover { transform: translate(-3px,-3px); box-shadow: 7px 7px 0 #121210; }
+    .brut-card.active-card { background:#F4FAF6; border-color:#121210; box-shadow: 6px 6px 0 #2E8C42; }
+    
+    .btn-press { transition: all 0.15s ease; cursor: pointer; }
+    .btn-press:hover { transform: translate(-2px,-2px); box-shadow: 6px 6px 0 #121210; }
+    .btn-press:active { transform: translate(4px,4px); box-shadow: 0 0 0 #121210 !important; }
+    
+    .stripes-amber { background-image: repeating-linear-gradient(45deg, #F4D89A, #F4D89A 12px, #E8A030 12px, #E8A030 14px); }
+    .grid-paper { background-image: linear-gradient(rgba(18,18,16,0.08) 1px,transparent 1px),linear-gradient(90deg,rgba(18,18,16,0.08) 1px,transparent 1px); background-size: 24px 24px; }
+    .polka { background-image: radial-gradient(circle,#121210 1.5px,transparent 1.5px); background-size: 20px 20px; }
+    .tab-active { background:#121210; color:#FFFFFF; }
+    .nav-item:hover { transform: translate(-2px,-2px); box-shadow: 6px 6px 0 #121210; }
+    
+    /* Stamp Styles */
+    .stamp {
+      font-family: 'Archivo', sans-serif;
+      font-weight: 700;
+      border: 3px solid currentColor;
+      padding: 6px 14px;
+      letter-spacing: 0.12em;
+      display: inline-block;
+      border-radius: 4px;
+      position: relative;
     }
-    .glass-card {
-      background: linear-gradient(135deg, rgba(255, 255, 255, 0.05) 0%, rgba(255, 255, 255, 0.01) 100%);
-      backdrop-filter: blur(16px);
-      border: 1px solid rgba(255, 255, 255, 0.1);
-      transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
-      transform-style: preserve-3d;
+    .stamp::before {
+      content:""; position:absolute; inset:2px; border: 1px solid currentColor; border-radius:2px; opacity:.6;
     }
-    .glass-card:hover {
-      border-color: rgba(0, 240, 255, 0.4);
-      box-shadow: 0 20px 40px -15px rgba(0, 240, 255, 0.2);
+    
+    .big-stamp {
+      position: absolute;
+      font-family: 'Archivo', sans-serif;
+      font-weight: 800;
+      font-size: 54px;
+      letter-spacing: 0.15em;
+      border: 7px solid currentColor;
+      padding: 14px 32px;
+      border-radius: 6px;
+      pointer-events: none;
+      z-index: 40;
+      text-transform: uppercase;
     }
-    .mesh-gradient {
-      background: radial-gradient(circle at 50% 20%, rgba(99, 102, 241, 0.18) 0%, transparent 60%),
-                  radial-gradient(circle at 80% 80%, rgba(0, 240, 255, 0.12) 0%, transparent 50%),
-                  radial-gradient(circle at 10% 60%, rgba(139, 92, 246, 0.15) 0%, transparent 50%);
+    
+    .tag { display:inline-flex; align-items:center; gap:5px; padding:3px 8px; border:2px solid #121210; font-weight:700; font-size:11px; letter-spacing:0.06em; text-transform:uppercase; }
+    .chain-node { width:26px; height:26px; border:2px solid #121210; border-radius:999px; display:inline-flex; align-items:center; justify-content:center; font-size:11px; font-weight:700; }
+    .chain-line { width:16px; height:3px; background:#121210; }
+    
+    .stamp-btn { display:flex; flex-direction:column; align-items:center; justify-content:center; gap:6px; padding:16px 12px; border:3px solid #121210; box-shadow: 4px 4px 0 #121210; cursor:pointer; font-family:'Archivo'; font-weight:700; letter-spacing:0.1em; transition:all 0.15s ease; }
+    .stamp-btn:hover { transform: translate(-2px,-2px); box-shadow: 6px 6px 0 #121210; }
+    .stamp-btn:active { transform: translate(4px,4px); box-shadow: 0 0 0 #121210 !important; }
+    
+    /* 3D Canvas Box */
+    #seal-3d-canvas {
+      width: 100%;
+      height: 100%;
+      display: block;
+      cursor: grab;
     }
+    #seal-3d-canvas:active { cursor: grabbing; }
+
+    /* Custom Scrollbar */
+    ::-webkit-scrollbar { width: 6px; height:6px; }
+    ::-webkit-scrollbar-track { background: #CFE8D6; }
+    ::-webkit-scrollbar-thumb { background: #121210; border-radius: 0px; }
   </style>
 </head>
-<body class="bg-[#05070B] text-slate-100 font-sans antialiased overflow-x-hidden selection:bg-cyan-500 selection:text-black">
+<body class="min-h-screen text-[#121210] selection:bg-[#2E8C42] selection:text-white">
 
-  <!-- 3D Canvas Container -->
-  <div id="canvas-container" class="fixed inset-0 pointer-events-none z-0"></div>
+<div class="min-h-screen flex flex-col xl:flex-row">
 
-  <!-- Noise & Ambient Glow Overlay -->
-  <div class="fixed inset-0 pointer-events-none z-[1] mesh-gradient"></div>
-
-  <!-- Navigation -->
-  <header class="fixed top-0 left-0 right-0 z-50 px-4 sm:px-8 py-4 transition-all duration-300" id="navbar">
-    <div class="max-w-7xl mx-auto flex items-center justify-between glass-panel rounded-2xl px-6 py-3.5 shadow-2xl">
-      <!-- Logo -->
-      <a href="#" class="flex items-center gap-3 group">
-        <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-cyan-500 via-indigo-500 to-purple-600 p-[1.5px] transition-transform duration-300 group-hover:scale-105">
-          <div class="w-full h-full bg-[#090D16] rounded-[10px] flex items-center justify-center">
-            <i data-lucide="box" class="w-5 h-5 text-cyan-400 group-hover:rotate-45 transition-transform duration-500"></i>
-          </div>
-        </div>
-        <div>
-          <span class="font-display font-extrabold text-lg tracking-wider text-white">ZERO<span class="text-cyan-400">HOUR</span></span>
-          <span class="text-[10px] block font-mono text-cyan-400/80 -mt-1 tracking-widest">3D INTERACTIVE UI/UX</span>
-        </div>
-      </a>
-
-      <!-- Navigation Links -->
-      <nav class="hidden md:flex items-center gap-8 font-medium text-sm text-slate-300">
-        <a href="#hero" class="hover:text-cyan-400 transition-colors">Overview</a>
-        <a href="#features" class="hover:text-cyan-400 transition-colors">3D Elements</a>
-        <a href="#simulator" class="hover:text-cyan-400 transition-colors">Live Matrix</a>
-        <a href="#workflow" class="hover:text-cyan-400 transition-colors">Architecture</a>
-      </nav>
-
-      <!-- Right Action Hub -->
-      <div class="flex items-center gap-3">
-        <!-- Interactive 3D Audio Trigger -->
-        <button id="sound-btn" onclick="toggleSoundFX()" class="p-2.5 rounded-xl border border-white/10 bg-white/5 hover:bg-white/10 transition-colors text-slate-400 hover:text-cyan-400" title="Toggle UI Sound Effects">
-          <i data-lucide="volume-2" id="sound-icon" class="w-4 h-4"></i>
-        </button>
-
-        <a href="#simulator" class="relative group inline-flex items-center justify-center p-0.5 overflow-hidden rounded-xl font-medium text-xs text-white">
-          <span class="absolute inset-0 w-full h-full bg-gradient-to-br from-cyan-400 to-purple-600 group-hover:from-cyan-300 group-hover:to-purple-500"></span>
-          <span class="relative px-5 py-2.5 transition-all ease-out bg-[#090D16] rounded-[10px] group-hover:bg-opacity-0">
-            Launch Prototype
-          </span>
-        </a>
+  <!-- SIDEBAR NAVIGATION PANE -->
+  <aside class="w-full xl:w-[270px] shrink-0 bg-[#CFE8D6] border-b-[3px] xl:border-b-0 xl:border-r-[3px] border-[#121210] p-5 flex flex-col gap-2">
+    <!-- Brand / Header -->
+    <div class="flex items-center gap-3 mb-4">
+      <div class="w-11 h-11 bg-[#2E8C42] brut-sm flex items-center justify-center text-white">
+        <i class="ti ti-stamp text-2xl"></i>
+      </div>
+      <div>
+        <div class="font-display font-extrabold text-xl leading-none tracking-tight">APPROVA</div>
+        <div class="text-[10px] font-mono tracking-widest opacity-60">FINTECH OPS · AUDITABLE</div>
       </div>
     </div>
-  </header>
 
-  <!-- Main Content -->
-  <main class="relative z-10 pt-28">
+    <!-- 3D KINETIC SEAL WIDGET -->
+    <div class="brut bg-white p-3 mb-2 relative overflow-hidden">
+      <div class="flex items-center justify-between mb-1">
+        <span class="font-mono text-[10px] font-bold tracking-widest text-[#2E8C42]">● 3D AUDIT SEAL</span>
+        <span class="font-mono text-[9px] bg-[#CFE8D6] px-1 border border-[#121210]">INTERACTIVE</span>
+      </div>
+      <div class="h-28 w-full bg-[#F4FAF6] border-2 border-[#121210] relative flex items-center justify-center overflow-hidden" id="three-seal-container">
+        <!-- Three.js Canvas injected here -->
+        <div class="absolute bottom-1 right-1 text-[9px] font-mono opacity-50 pointer-events-none">DRAG TO ROTATE</div>
+      </div>
+      <button onclick="stampRandomSeal()" class="w-full mt-2 brut-sm bg-[#121210] text-white text-[11px] font-display font-bold py-1 btn-press flex items-center justify-center gap-1">
+        <i class="ti ti-rotate-clockwise text-xs"></i> TEST 3D STAMP FX
+      </button>
+    </div>
 
-    <!-- HERO SECTION -->
-    <section id="hero" class="min-h-[92vh] flex items-center justify-center px-4 sm:px-8 relative">
-      <div class="max-w-6xl mx-auto text-center relative z-10 py-12">
-        <!-- Live Status Pill -->
-        <div class="inline-flex items-center gap-2.5 px-4 py-2 rounded-full glass-panel border border-cyan-500/30 text-xs font-mono text-cyan-300 mb-8 animate-pulse-slow">
-          <span class="w-2 h-2 rounded-full bg-cyan-400 animate-ping"></span>
-          <span>● ZERO-HOUR PROTOCOL ONLINE // 3D SYNAPSE ACTIVE</span>
+    <div class="text-[10px] font-mono tracking-widest opacity-50 mb-1 px-1">WORKSPACE INBOX</div>
+
+    <a class="nav-item brut bg-[#FFFFFF] flex items-center justify-between p-2.5 cursor-pointer" onclick="filterQueue('all')">
+      <span class="flex items-center gap-2.5 font-display font-bold text-sm"><i class="ti ti-inbox text-lg"></i>Inbox</span>
+      <span class="bg-[#121210] text-[#FFFFFF] font-mono text-xs px-2 py-0.5">12</span>
+    </a>
+    <a class="nav-item brut bg-[#E8A030] flex items-center justify-between p-2.5 cursor-pointer" onclick="filterQueue('escalated')">
+      <span class="flex items-center gap-2.5 font-display font-bold text-sm"><i class="ti ti-flame text-lg"></i>Escalations</span>
+      <span class="bg-[#C03A3A] text-[#FFFFFF] font-mono text-xs px-2 py-0.5">3</span>
+    </a>
+    <a class="nav-item brut bg-[#FFFFFF] flex items-center justify-between p-2.5 cursor-pointer" onclick="scrollToSection('history-table-section')">
+      <span class="flex items-center gap-2.5 font-display font-bold text-sm"><i class="ti ti-archive text-lg"></i>History</span>
+      <span class="font-mono text-xs opacity-60">2,481</span>
+    </a>
+    <a class="nav-item brut bg-[#FFFFFF] flex items-center gap-2.5 p-2.5 cursor-pointer font-display font-bold text-sm" onclick="scrollToSection('workflow-builder-section')">
+      <i class="ti ti-git-merge text-lg"></i>Workflow Builder
+    </a>
+
+    <!-- Bottom CFO Profile & Metrics -->
+    <div class="mt-auto pt-4">
+      <div class="brut bg-[#FFFFFF] p-3">
+        <div class="text-[10px] font-mono tracking-widest opacity-60 mb-1">TODAY · STAMPED</div>
+        <div class="flex items-end gap-2">
+          <div class="font-mono font-bold text-3xl text-[#121210]" id="stamped-count">47</div>
+          <div class="text-xs opacity-60 mb-1">of 59 pending</div>
         </div>
-
-        <!-- Hero Headline -->
-        <h1 class="font-display text-4xl sm:text-6xl md:text-7xl font-extrabold tracking-tight text-white max-w-5xl mx-auto leading-[1.1] mb-6">
-          Architecting the Future of <br class="hidden sm:block"/>
-          <span class="text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 via-indigo-300 to-purple-400 animate-glow">
-            Spatial 3D Experiences
-          </span>
-        </h1>
-
-        <!-- Subtitle -->
-        <p class="text-slate-300 text-base sm:text-xl max-w-2xl mx-auto leading-relaxed mb-10 font-normal">
-          A high-velocity spatial computing interface engineered with interactive Three.js shaders, reactive micro-interactions, and real-time kinetic physics.
-        </p>
-
-        <!-- CTA Action Hub -->
-        <div class="flex flex-col sm:flex-row items-center justify-center gap-4 mb-16">
-          <button onclick="document.getElementById('simulator').scrollIntoView({behavior: 'smooth'})" class="w-full sm:w-auto px-8 py-4 rounded-xl bg-gradient-to-r from-cyan-400 via-indigo-500 to-purple-600 text-black font-bold text-sm tracking-wide shadow-lg shadow-cyan-500/25 hover:shadow-cyan-400/50 hover:scale-105 active:scale-95 transition-all duration-300 flex items-center justify-center gap-2">
-            <span>Explore 3D Matrix</span>
-            <i data-lucide="arrow-right" class="w-4 h-4"></i>
-          </button>
-
-          <button onclick="changeGeometry()" class="w-full sm:w-auto px-8 py-4 rounded-xl glass-panel border border-white/15 text-white font-medium text-sm hover:border-cyan-400/50 hover:bg-white/10 active:scale-95 transition-all duration-300 flex items-center justify-center gap-2">
-            <i data-lucide="refresh-cw" class="w-4 h-4 text-cyan-400 animate-spin-slow"></i>
-            <span>Morph 3D Mesh</span>
-          </button>
-        </div>
-
-        <!-- Interactive 3D Control Pill Bar -->
-        <div class="glass-panel max-w-xl mx-auto rounded-2xl p-3 border border-white/10 flex items-center justify-around gap-2 text-xs font-mono text-slate-400">
-          <span class="flex items-center gap-2">
-            <span class="w-2 h-2 rounded-full bg-emerald-400"></span> 60 FPS WebGL
-          </span>
-          <span class="text-white/20">|</span>
-          <button onclick="toggleWireframe()" class="hover:text-cyan-300 transition-colors flex items-center gap-1.5 cursor-pointer">
-            <i data-lucide="grid" class="w-3.5 h-3.5 text-cyan-400"></i> Wireframe Mode
-          </button>
-          <span class="text-white/20">|</span>
-          <button onclick="speedUpMesh()" class="hover:text-purple-300 transition-colors flex items-center gap-1.5 cursor-pointer">
-            <i data-lucide="zap" class="w-3.5 h-3.5 text-purple-400"></i> Warp Speed
-          </button>
+        <div class="mt-2 h-3 border-2 border-[#121210] flex overflow-hidden">
+          <div class="bg-[#2E8C42] w-[65%]" title="Approved: 65%"></div>
+          <div class="bg-[#C03A3A] w-[15%]" title="Rejected: 15%"></div>
+          <div class="bg-[#E8A030] w-[20%]" title="Needs Detail: 20%"></div>
         </div>
       </div>
-    </section>
-
-    <!-- METRICS STRIP -->
-    <section class="py-12 border-y border-white/5 relative z-10 glass-panel">
-      <div class="max-w-7xl mx-auto px-6 grid grid-cols-2 md:grid-cols-4 gap-8 text-center">
+      <div class="flex items-center gap-2.5 mt-3 p-2 bg-white/40 border border-[#121210]">
+        <img src="https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=100&h=100&fit=crop&crop=face" class="w-9 h-9 border-2 border-[#121210] object-cover" alt="Approver"/>
         <div>
-          <div class="font-display text-3xl sm:text-4xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-indigo-300"><span class="counter" data-target="99.98">99.98</span>%</div>
-          <div class="text-xs uppercase tracking-widest text-slate-400 mt-1 font-mono">Frame Stability</div>
-        </div>
-        <div>
-          <div class="font-display text-3xl sm:text-4xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-indigo-300 to-purple-400"><span class="counter" data-target="1.8">1.8</span>ms</div>
-          <div class="text-xs uppercase tracking-widest text-slate-400 mt-1 font-mono">Shader Latency</div>
-        </div>
-        <div>
-          <div class="font-display text-3xl sm:text-4xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-pink-400"><span class="counter" data-target="3">3</span>D</div>
-          <div class="text-xs uppercase tracking-widest text-slate-400 mt-1 font-mono">Kinetic Realism</div>
-        </div>
-        <div>
-          <div class="font-display text-3xl sm:text-4xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-cyan-300 to-emerald-400">ZERO</div>
-          <div class="text-xs uppercase tracking-widest text-slate-400 mt-1 font-mono">Hour Ready</div>
+          <div class="text-xs font-bold leading-tight">Mara Vossberg</div>
+          <div class="text-[9px] font-mono opacity-60">CHIEF FINANCIAL OFFICER</div>
         </div>
       </div>
-    </section>
+    </div>
+  </aside>
 
-    <!-- 3D INTERACTIVE TILT CARDS -->
-    <section id="features" class="py-24 px-4 sm:px-8 max-w-7xl mx-auto">
-      <div class="text-center max-w-3xl mx-auto mb-16">
-        <span class="text-xs font-mono uppercase tracking-widest text-cyan-400">Tactile & Spatial UX</span>
-        <h2 class="font-display text-3xl sm:text-5xl font-extrabold text-white mt-2 mb-4">Engineered for Sensory Immersion</h2>
-        <p class="text-slate-400 text-sm sm:text-base">Hover over the cards below to experience dynamic 3D perspective calculation and optical lighting shifts.</p>
+  <!-- MAIN PANE -->
+  <main class="flex-1 flex flex-col min-w-0">
+
+    <!-- TOP HEADER BAR -->
+    <header class="border-b-[3px] border-[#121210] bg-[#CFE8D6] px-6 py-4 flex flex-col md:flex-row md:items-center justify-between gap-4">
+      <div>
+        <div class="flex items-center gap-3 flex-wrap">
+          <h1 class="font-display font-extrabold text-2xl sm:text-3xl tracking-tight">Approver Inbox</h1>
+          <span class="tag bg-[#FFFFFF]">12 PENDING</span>
+          <span class="tag bg-[#C03A3A] text-[#FFFFFF] border-[#121210]">3 PAST SLA</span>
+        </div>
+        <div class="text-xs font-mono opacity-70 mt-1 flex items-center gap-2">
+          <span id="live-timestamp">LIVE · 15 OCT 2026 · 13:42:18 UTC</span>
+          <span class="w-2 h-2 rounded-full bg-[#2E8C42] animate-ping"></span>
+        </div>
       </div>
+      <div class="flex items-center gap-2 flex-wrap">
+        <div class="brut bg-[#FFFFFF] flex items-center gap-2 px-3 py-2 w-full sm:w-64">
+          <i class="ti ti-search"></i>
+          <input id="search-input" oninput="filterSearch(this.value)" class="bg-transparent flex-1 text-xs font-mono outline-none" placeholder="Search PO, vendor, requester…" />
+          <span class="font-mono text-[9px] border border-[#121210] px-1 bg-[#CFE8D6]">⌘K</span>
+        </div>
+        <button onclick="promptNewRequest()" class="brut bg-[#121210] text-[#FFFFFF] px-4 py-2 font-display font-bold text-xs btn-press flex items-center gap-1.5">
+          <i class="ti ti-plus"></i> NEW REQUEST
+        </button>
+      </div>
+    </header>
 
-      <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
-        <!-- Card 1 -->
-        <div class="tilt-card glass-card rounded-3xl p-8 relative overflow-hidden group cursor-pointer" onmousemove="handleTilt(event, this)" onmouseleave="resetTilt(this)">
-          <div class="w-14 h-14 rounded-2xl bg-cyan-500/10 border border-cyan-500/30 flex items-center justify-center text-cyan-400 mb-6 group-hover:scale-110 group-hover:bg-cyan-500/20 transition-all duration-300">
-            <i data-lucide="layers" class="w-7 h-7"></i>
+    <!-- TABS -->
+    <div class="px-6 pt-3 flex gap-0 border-b-[3px] border-[#121210] bg-[#CFE8D6] overflow-x-auto">
+      <button class="tab-active font-display font-bold px-5 py-2 border-[3px] border-[#121210] border-b-0 -mb-[3px] text-xs">Inbox (12)</button>
+      <button onclick="scrollToSection('escalation-section')" class="font-display font-bold px-5 py-2 border-[3px] border-[#121210] border-l-0 border-b-0 -mb-[3px] bg-[#FFFFFF] text-xs hover:bg-slate-50">Escalations (3)</button>
+      <button onclick="scrollToSection('history-table-section')" class="font-display font-bold px-5 py-2 border-[3px] border-[#121210] border-l-0 border-b-0 -mb-[3px] bg-[#FFFFFF] text-xs hover:bg-slate-50">Audit History</button>
+      <button onclick="scrollToSection('workflow-builder-section')" class="font-display font-bold px-5 py-2 border-[3px] border-[#121210] border-l-0 border-b-0 -mb-[3px] bg-[#FFFFFF] text-xs hover:bg-slate-50">Workflow Builder</button>
+    </div>
+
+    <!-- SPLIT CONTENT: REQUEST QUEUE + DOCUMENT DETAIL + ACTION RAIL -->
+    <div class="flex flex-col lg:flex-row flex-1 min-h-0">
+
+      <!-- REQUEST QUEUE PANE -->
+      <section class="w-full lg:w-[42%] xl:w-[38%] border-b-[3px] lg:border-b-0 lg:border-r-[3px] border-[#121210] p-5 space-y-4 overflow-y-auto bg-[#CFE8D6] max-h-[85vh] lg:max-h-none" id="requests-queue">
+
+        <!-- Subheader filters -->
+        <div class="flex items-center justify-between text-xs font-mono">
+          <div class="flex gap-1.5">
+            <button onclick="filterQueue('all')" class="brut-sm bg-[#FFFFFF] px-2.5 py-0.5 font-bold">ALL</button>
+            <button onclick="filterQueue('po')" class="px-2 py-0.5 opacity-70 hover:opacity-100 font-bold">PO</button>
+            <button onclick="filterQueue('expense')" class="px-2 py-0.5 opacity-70 hover:opacity-100 font-bold">EXPENSES</button>
           </div>
-          <h3 class="font-display text-2xl font-bold text-white mb-3">Spatial Depth Layers</h3>
-          <p class="text-slate-400 text-sm leading-relaxed mb-6">
-            Multi-tiered Z-index perspective rendering that responds directly to cursor motion and viewport depth maps.
-          </p>
-          <div class="flex items-center text-cyan-400 text-xs font-semibold gap-1.5 group-hover:gap-3 transition-all duration-300">
-            <span>Explore Architecture</span>
-            <i data-lucide="arrow-right" class="w-4 h-4"></i>
-          </div>
-          <div class="absolute -bottom-16 -right-16 w-36 h-36 bg-cyan-500/10 rounded-full blur-2xl group-hover:bg-cyan-500/25 transition-all duration-500"></div>
+          <span class="opacity-60 text-[11px]">SORT: SLA URGENCY ↓</span>
         </div>
+
+        <!-- Card 1 (Active) -->
+        <article class="req-card brut-card p-4 relative cursor-pointer active-card" onclick="selectPO(0, this)">
+          <span class="absolute -top-2.5 -left-2 bg-[#E8A030] border-2 border-[#121210] px-2 py-0.5 text-[10px] font-mono font-bold">PO-2025-0418</span>
+          <div class="flex justify-between items-start gap-2">
+            <div>
+              <div class="font-display font-bold text-lg leading-tight">Helvetica Logistics Co.</div>
+              <div class="text-xs opacity-70 mt-0.5">Q1 Warehouse Rack Replacement · 14 items</div>
+            </div>
+            <div class="text-right shrink-0">
+              <div class="font-mono font-bold text-xl">$48,920.00</div>
+              <div class="text-[10px] font-mono opacity-60">USD · NET-30</div>
+            </div>
+          </div>
+          <div class="flex items-center gap-2 mt-3 flex-wrap">
+            <span class="tag bg-[#CFE8D6]">CAPEX</span>
+            <span class="tag bg-[#FFFFFF]">PURCHASE ORDER</span>
+            <span class="tag bg-[#E8A030] text-black"><i class="ti ti-clock text-xs"></i>3D SLA LEFT</span>
+          </div>
+          <div class="flex items-center justify-between mt-4">
+            <div class="flex items-center gap-2">
+              <img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=80&h=80&fit=crop&crop=face" class="w-7 h-7 border-2 border-[#121210] object-cover"/>
+              <div class="text-xs"><span class="font-semibold">Devin Park</span><br/><span class="opacity-60 font-mono text-[10px]">OPS · SUBMITTED 09:11</span></div>
+            </div>
+            <div class="flex items-center">
+              <span class="chain-node bg-[#2E8C42] text-white">✓</span>
+              <span class="chain-line"></span>
+              <span class="chain-node bg-[#2E8C42] text-white">✓</span>
+              <span class="chain-line"></span>
+              <span class="chain-node bg-[#E8A030]">M</span>
+              <span class="chain-line"></span>
+              <span class="chain-node bg-[#FFFFFF] opacity-50">·</span>
+            </div>
+          </div>
+        </article>
 
         <!-- Card 2 -->
-        <div class="tilt-card glass-card rounded-3xl p-8 relative overflow-hidden group cursor-pointer" onmousemove="handleTilt(event, this)" onmouseleave="resetTilt(this)">
-          <div class="w-14 h-14 rounded-2xl bg-purple-500/10 border border-purple-500/30 flex items-center justify-center text-purple-400 mb-6 group-hover:scale-110 group-hover:bg-purple-500/20 transition-all duration-300">
-            <i data-lucide="sparkles" class="w-7 h-7"></i>
-          </div>
-          <h3 class="font-display text-2xl font-bold text-white mb-3">Kinetic Physics Mesh</h3>
-          <p class="text-slate-400 text-sm leading-relaxed mb-6">
-            Procedurally computed vertex manipulation giving every card an organic, fluid reaction to user engagement.
-          </p>
-          <div class="flex items-center text-purple-400 text-xs font-semibold gap-1.5 group-hover:gap-3 transition-all duration-300">
-            <span>Inspect Physics</span>
-            <i data-lucide="arrow-right" class="w-4 h-4"></i>
-          </div>
-          <div class="absolute -bottom-16 -right-16 w-36 h-36 bg-purple-500/10 rounded-full blur-2xl group-hover:bg-purple-500/25 transition-all duration-500"></div>
-        </div>
-
-        <!-- Card 3 -->
-        <div class="tilt-card glass-card rounded-3xl p-8 relative overflow-hidden group cursor-pointer" onmousemove="handleTilt(event, this)" onmouseleave="resetTilt(this)">
-          <div class="w-14 h-14 rounded-2xl bg-indigo-500/10 border border-indigo-500/30 flex items-center justify-center text-indigo-400 mb-6 group-hover:scale-110 group-hover:bg-indigo-500/20 transition-all duration-300">
-            <i data-lucide="cpu" class="w-7 h-7"></i>
-          </div>
-          <h3 class="font-display text-2xl font-bold text-white mb-3">Zero-Latency Sync</h3>
-          <p class="text-slate-400 text-sm leading-relaxed mb-6">
-            Hardware-accelerated rendering utilizing native WebGL buffers with sub-frame response fidelity.
-          </p>
-          <div class="flex items-center text-indigo-400 text-xs font-semibold gap-1.5 group-hover:gap-3 transition-all duration-300">
-            <span>Run Benchmark</span>
-            <i data-lucide="arrow-right" class="w-4 h-4"></i>
-          </div>
-          <div class="absolute -bottom-16 -right-16 w-36 h-36 bg-indigo-500/10 rounded-full blur-2xl group-hover:bg-indigo-500/25 transition-all duration-500"></div>
-        </div>
-      </div>
-    </section>
-
-    <!-- INTERACTIVE SIMULATOR / CONFIGURATOR -->
-    <section id="simulator" class="py-24 px-4 sm:px-8 max-w-7xl mx-auto">
-      <div class="glass-panel rounded-3xl border border-white/10 p-8 sm:p-12 shadow-2xl relative overflow-hidden">
-        <div class="grid grid-cols-1 lg:grid-cols-12 gap-10 items-center">
-          
-          <!-- Controls Panel -->
-          <div class="lg:col-span-5 space-y-6">
+        <article class="req-card brut-card p-4 relative cursor-pointer" onclick="selectPO(1, this)">
+          <span class="absolute -top-2.5 -left-2 bg-[#FFFFFF] border-2 border-[#121210] px-2 py-0.5 text-[10px] font-mono font-bold">EXP-9921</span>
+          <div class="flex justify-between items-start gap-2">
             <div>
-              <span class="text-xs font-mono uppercase tracking-widest text-cyan-400">Live Simulator</span>
-              <h2 class="font-display text-3xl font-extrabold text-white mt-1">3D Core Configurator</h2>
-              <p class="text-slate-400 text-sm mt-2">Fine-tune the mathematical parameters driving the background 3D WebGL engine in real-time.</p>
+              <div class="font-display font-bold text-lg leading-tight">Figma Inc.</div>
+              <div class="text-xs opacity-70 mt-0.5">Annual team seat renewal · 22 seats</div>
             </div>
+            <div class="text-right shrink-0">
+              <div class="font-mono font-bold text-xl">$3,960.00</div>
+              <div class="text-[10px] font-mono opacity-60">USD · CARD</div>
+            </div>
+          </div>
+          <div class="flex items-center gap-2 mt-3 flex-wrap">
+            <span class="tag bg-[#CFE8D6]">SOFTWARE</span>
+            <span class="tag bg-[#FFFFFF]">EXPENSE</span>
+            <span class="tag bg-[#2E8C42] text-white">READY</span>
+          </div>
+          <div class="flex items-center justify-between mt-4">
+            <div class="flex items-center gap-2">
+              <img src="https://images.unsplash.com/photo-1517841905240-472988babdf9?w=80&h=80&fit=crop&crop=face" class="w-7 h-7 border-2 border-[#121210] object-cover"/>
+              <div class="text-xs"><span class="font-semibold">Lena Akhtar</span><br/><span class="opacity-60 font-mono text-[10px]">DESIGN · 08:47</span></div>
+            </div>
+            <div class="flex items-center">
+              <span class="chain-node bg-[#2E8C42] text-white">✓</span>
+              <span class="chain-line"></span>
+              <span class="chain-node bg-[#E8A030]">M</span>
+              <span class="chain-line"></span>
+              <span class="chain-node bg-[#FFFFFF] opacity-50">·</span>
+            </div>
+          </div>
+        </article>
 
-            <!-- Slider 1: Rotation Speed -->
-            <div class="space-y-2">
-              <div class="flex justify-between text-xs font-mono">
-                <span class="text-slate-300">Angular Velocity</span>
-                <span id="speed-val" class="text-cyan-400 font-bold">1.0x</span>
+        <!-- Card 3 (Escalated) -->
+        <article class="req-card brut-card p-4 relative cursor-pointer" onclick="selectPO(2, this)">
+          <span class="absolute -top-2.5 -left-2 bg-[#C03A3A] text-[#FFFFFF] border-2 border-[#121210] px-2 py-0.5 text-[10px] font-mono font-bold">⚠ PO-2025-0402</span>
+          <div class="flex justify-between items-start gap-2">
+            <div>
+              <div class="font-display font-bold text-lg leading-tight">Brunswick Catering Ltd.</div>
+              <div class="text-xs opacity-70 mt-0.5">Off-site quarterly all-hands · Q1</div>
+            </div>
+            <div class="text-right shrink-0">
+              <div class="font-mono font-bold text-xl text-[#C03A3A]">$12,480.50</div>
+              <div class="text-[10px] font-mono opacity-60">USD · INVOICE</div>
+            </div>
+          </div>
+          <div class="flex items-center gap-2 mt-3 flex-wrap">
+            <span class="tag bg-[#CFE8D6]">EVENTS</span>
+            <span class="tag bg-[#C03A3A] text-[#FFFFFF]"><i class="ti ti-flame text-xs"></i>ESCALATED</span>
+            <span class="tag bg-[#FFFFFF]">+2 DAYS LATE</span>
+          </div>
+          <div class="flex items-center justify-between mt-4">
+            <div class="flex items-center gap-2">
+              <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=80&h=80&fit=crop&crop=face" class="w-7 h-7 border-2 border-[#121210] object-cover"/>
+              <div class="text-xs"><span class="font-semibold">Marco Reyes</span><br/><span class="opacity-60 font-mono text-[10px]">PEOPLE OPS · 11 MAR</span></div>
+            </div>
+            <div class="flex items-center">
+              <span class="chain-node bg-[#2E8C42] text-white">✓</span>
+              <span class="chain-line"></span>
+              <span class="chain-node bg-[#C03A3A] text-white">!</span>
+              <span class="chain-line"></span>
+              <span class="chain-node bg-[#FFFFFF] opacity-50">·</span>
+            </div>
+          </div>
+        </article>
+
+        <!-- Card 4 -->
+        <article class="req-card brut-card p-4 relative cursor-pointer" onclick="selectPO(3, this)">
+          <span class="absolute -top-2.5 -left-2 bg-[#FFFFFF] border-2 border-[#121210] px-2 py-0.5 text-[10px] font-mono font-bold">EXP-9918</span>
+          <div class="flex justify-between items-start gap-2">
+            <div>
+              <div class="font-display font-bold text-lg leading-tight">AWS Cloud Infrastructure</div>
+              <div class="text-xs opacity-70 mt-0.5">Production cluster spend · auto-billed</div>
+            </div>
+            <div class="text-right shrink-0">
+              <div class="font-mono font-bold text-xl">$27,304.18</div>
+              <div class="text-[10px] font-mono opacity-60">USD · ACH</div>
+            </div>
+          </div>
+          <div class="flex items-center gap-2 mt-3 flex-wrap">
+            <span class="tag bg-[#CFE8D6]">INFRA</span>
+            <span class="tag bg-[#FFFFFF]">RECURRING</span>
+          </div>
+          <div class="flex items-center justify-between mt-4">
+            <div class="flex items-center gap-2">
+              <img src="https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=80&h=80&fit=crop&crop=face" class="w-7 h-7 border-2 border-[#121210] object-cover"/>
+              <div class="text-xs"><span class="font-semibold">Noor Halberg</span><br/><span class="opacity-60 font-mono text-[10px]">ENG LEAD · 07:30</span></div>
+            </div>
+            <div class="flex items-center">
+              <span class="chain-node bg-[#2E8C42] text-white">✓</span>
+              <span class="chain-line"></span>
+              <span class="chain-node bg-[#2E8C42] text-white">✓</span>
+              <span class="chain-line"></span>
+              <span class="chain-node bg-[#E8A030]">M</span>
+            </div>
+          </div>
+        </article>
+
+      </section>
+
+      <!-- DOCUMENT DETAIL + ACTION RAIL -->
+      <section class="flex-1 p-5 sm:p-6 overflow-y-auto grid-paper" id="detail-pane">
+
+        <div class="flex flex-col xl:flex-row gap-5 items-start">
+
+          <!-- PURCHASE ORDER INVOICE DOCUMENT -->
+          <div id="invoice" class="w-full xl:flex-1 bg-white brut-lg p-6 sm:p-7 relative overflow-hidden min-h-[560px]">
+
+            <!-- Watermark Big Stamp Drop Target -->
+            <div id="stamp-drop" class="absolute top-12 right-12 pointer-events-none"></div>
+
+            <!-- Invoice Top Header -->
+            <div class="flex justify-between items-start border-b-[3px] border-[#121210] pb-4 gap-4">
+              <div>
+                <div class="font-display font-extrabold text-2xl sm:text-3xl" id="doc-title">PURCHASE ORDER</div>
+                <div class="font-mono text-xs opacity-70 mt-1" id="doc-id-date">PO-2025-0418 · ISSUED 14 MAR 2025</div>
               </div>
-              <input type="range" min="0" max="5" step="0.1" value="1.0" id="slider-speed" oninput="updateSpeed(this.value)" class="w-full h-1.5 bg-slate-800 rounded-lg appearance-none cursor-pointer accent-cyan-400">
-            </div>
-
-            <!-- Slider 2: Particle Count -->
-            <div class="space-y-2">
-              <div class="flex justify-between text-xs font-mono">
-                <span class="text-slate-300">Quantum Field Density</span>
-                <span id="particle-val" class="text-purple-400 font-bold">1,500</span>
-              </div>
-              <input type="range" min="300" max="3000" step="100" value="1500" id="slider-particles" oninput="updateParticles(this.value)" class="w-full h-1.5 bg-slate-800 rounded-lg appearance-none cursor-pointer accent-purple-400">
-            </div>
-
-            <!-- Geometry Selector Buttons -->
-            <div class="pt-2">
-              <label class="block text-xs font-mono text-slate-300 mb-2">Active Mathematical Geometry</label>
-              <div class="grid grid-cols-3 gap-2">
-                <button onclick="setGeometry('icosahedron')" class="px-3 py-2.5 rounded-xl border border-white/10 text-xs font-mono bg-white/5 hover:border-cyan-400 hover:text-cyan-300 transition-colors">Icosahedron</button>
-                <button onclick="setGeometry('torus')" class="px-3 py-2.5 rounded-xl border border-white/10 text-xs font-mono bg-white/5 hover:border-cyan-400 hover:text-cyan-300 transition-colors">Torus Knot</button>
-                <button onclick="setGeometry('octahedron')" class="px-3 py-2.5 rounded-xl border border-white/10 text-xs font-mono bg-white/5 hover:border-cyan-400 hover:text-cyan-300 transition-colors">Octahedron</button>
+              <div class="text-right">
+                <div class="font-mono text-[10px] opacity-60 tracking-widest">BILL TO</div>
+                <div class="font-display font-bold text-sm">Stamply Holdings GmbH</div>
+                <div class="font-mono text-[10px] opacity-60">DE-10115 BERLIN · VAT DE318442001</div>
               </div>
             </div>
 
-            <!-- Color Palette Mode -->
-            <div class="flex items-center gap-3 pt-2">
-              <button onclick="setThemeColor('#00F0FF', '#8B5CF6')" class="w-8 h-8 rounded-full bg-gradient-to-r from-cyan-400 to-purple-500 border-2 border-white/30 hover:scale-110 transition-transform"></button>
-              <button onclick="setThemeColor('#10B981', '#06B6D4')" class="w-8 h-8 rounded-full bg-gradient-to-r from-emerald-400 to-cyan-500 border-2 border-white/30 hover:scale-110 transition-transform"></button>
-              <button onclick="setThemeColor('#F43F5E', '#FB923C')" class="w-8 h-8 rounded-full bg-gradient-to-r from-rose-500 to-orange-400 border-2 border-white/30 hover:scale-110 transition-transform"></button>
-              <span class="text-xs text-slate-400 font-mono ml-2">Spectral Shaders</span>
+            <!-- Key Metadata Columns -->
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 mt-5">
+              <div>
+                <div class="font-mono text-[10px] opacity-60 tracking-widest">VENDOR</div>
+                <div class="font-display font-bold text-base sm:text-lg leading-tight" id="doc-vendor">Helvetica Logistics Co.</div>
+                <div class="text-xs opacity-70" id="doc-location">Zurich · CH-8005</div>
+              </div>
+              <div>
+                <div class="font-mono text-[10px] opacity-60 tracking-widest">CATEGORY</div>
+                <div class="font-display font-bold text-base sm:text-lg" id="doc-category">CapEx · Warehouse</div>
+                <div class="text-xs opacity-70">GL 4420 · Cost Ctr OPS-EU</div>
+              </div>
+              <div>
+                <div class="font-mono text-[10px] opacity-60 tracking-widest">PAYMENT TERMS</div>
+                <div class="font-display font-bold text-base sm:text-lg" id="doc-due">17 MAR 2025</div>
+                <div class="text-xs opacity-70">Net-30 · SWIFT Wire</div>
+              </div>
+            </div>
+
+            <!-- Line Items Table -->
+            <div class="overflow-x-auto mt-6">
+              <table class="w-full font-mono text-xs sm:text-sm">
+                <thead>
+                  <tr class="border-y-[3px] border-[#121210]">
+                    <th class="text-left py-2 font-bold tracking-widest text-xs">DESCRIPTION</th>
+                    <th class="text-right py-2 font-bold tracking-widest text-xs w-16">QTY</th>
+                    <th class="text-right py-2 font-bold tracking-widest text-xs w-24 sm:w-28">UNIT</th>
+                    <th class="text-right py-2 font-bold tracking-widest text-xs w-28 sm:w-32">AMOUNT</th>
+                  </tr>
+                </thead>
+                <tbody id="line-items-body">
+                  <tr class="border-b border-[#121210]/20"><td class="py-2.5">Heavy-duty pallet racking, 4-tier</td><td class="text-right">24</td><td class="text-right">1,280.00</td><td class="text-right">30,720.00</td></tr>
+                  <tr class="border-b border-[#121210]/20"><td class="py-2.5">Anchor bolts (M16) — case of 50</td><td class="text-right">12</td><td class="text-right">86.40</td><td class="text-right">1,036.80</td></tr>
+                  <tr class="border-b border-[#121210]/20"><td class="py-2.5">Installation labor · 3-day crew</td><td class="text-right">1</td><td class="text-right">14,800.00</td><td class="text-right">14,800.00</td></tr>
+                  <tr class="border-b border-[#121210]/20"><td class="py-2.5">Freight + customs handling</td><td class="text-right">1</td><td class="text-right">2,363.20</td><td class="text-right">2,363.20</td></tr>
+                </tbody>
+                <tfoot>
+                  <tr><td colspan="3" class="text-right py-1 opacity-70 text-xs">Subtotal</td><td class="text-right" id="doc-subtotal">48,920.00</td></tr>
+                  <tr><td colspan="3" class="text-right py-1 opacity-70 text-xs">VAT (0% export)</td><td class="text-right">— —</td></tr>
+                  <tr class="border-t-[3px] border-[#121210]"><td colspan="3" class="text-right py-2 font-display font-bold text-base">TOTAL USD</td><td class="text-right font-mono font-bold text-xl sm:text-2xl text-[#121210]" id="doc-total">$48,920.00</td></tr>
+                </tfoot>
+              </table>
+            </div>
+
+            <!-- Approval Stepper Chain -->
+            <div class="mt-6 border-t-[3px] border-[#121210] pt-4">
+              <div class="font-mono text-[10px] opacity-60 tracking-widest mb-3">MULTI-TIER APPROVAL CHAIN</div>
+              <div class="flex items-center gap-2 flex-wrap">
+                <div class="brut-sm bg-[#2E8C42] text-white px-3 py-1.5 text-xs">
+                  <div class="font-bold">D. Park</div><div class="text-[10px] opacity-90">Submitter</div>
+                </div>
+                <i class="ti ti-arrow-narrow-right text-xl"></i>
+                <div class="brut-sm bg-[#2E8C42] text-white px-3 py-1.5 text-xs">
+                  <div class="font-bold">A. Klein ✓</div><div class="text-[10px] opacity-90">Mgr · 09:18</div>
+                </div>
+                <i class="ti ti-arrow-narrow-right text-xl"></i>
+                <div class="brut-sm bg-[#2E8C42] text-white px-3 py-1.5 text-xs">
+                  <div class="font-bold">R. Sato ✓</div><div class="text-[10px] opacity-90">Fin Ctrl · 09:31</div>
+                </div>
+                <i class="ti ti-arrow-narrow-right text-xl"></i>
+                <div class="brut-sm bg-[#E8A030] px-3 py-1.5 text-xs">
+                  <div class="font-bold">YOU (CFO)</div><div class="text-[10px] font-bold">Pending Approval</div>
+                </div>
+                <i class="ti ti-arrow-narrow-right text-xl opacity-40"></i>
+                <div class="border-2 border-dashed border-[#121210]/40 px-3 py-1.5 text-xs opacity-60">
+                  <div class="font-bold">Board</div><div class="text-[10px]">Cond. ≥ $50k</div>
+                </div>
+              </div>
             </div>
           </div>
 
-          <!-- Interactive Monitor Output -->
-          <div class="lg:col-span-7 bg-[#080C14]/90 rounded-2xl border border-white/10 p-6 font-mono text-xs text-slate-300 relative shadow-inner">
-            <div class="flex items-center justify-between border-b border-white/10 pb-4 mb-4">
-              <div class="flex items-center gap-2">
-                <span class="w-3 h-3 rounded-full bg-red-500/80"></span>
-                <span class="w-3 h-3 rounded-full bg-yellow-500/80"></span>
-                <span class="w-3 h-3 rounded-full bg-green-500/80"></span>
-                <span class="text-slate-400 text-[11px] ml-2">matrix_terminal_v2.log</span>
+          <!-- STAMP DECISION ACTION RAIL -->
+          <div class="w-full xl:w-48 shrink-0 space-y-4">
+            <div class="font-mono text-[10px] tracking-widest opacity-60 uppercase">AUDIT DECISION</div>
+            
+            <!-- Approve Button -->
+            <button id="btn-approve" onclick="applyDecision('APPROVED', '#2E8C42')" class="stamp-btn w-full bg-[#2E8C42] text-white">
+              <i class="ti ti-check text-3xl"></i>
+              <span class="text-base tracking-wider">APPROVE</span>
+              <span class="font-mono text-[10px] opacity-80 normal-case tracking-normal">⌘ + ↵</span>
+            </button>
+
+            <!-- Reject Button -->
+            <button id="btn-reject" onclick="applyDecision('REJECTED', '#C03A3A')" class="stamp-btn w-full bg-[#C03A3A] text-white">
+              <i class="ti ti-x text-3xl"></i>
+              <span class="text-base tracking-wider">REJECT</span>
+              <span class="font-mono text-[10px] opacity-80 normal-case tracking-normal">⌘ + ⌫</span>
+            </button>
+
+            <!-- Needs Detail Button -->
+            <button id="btn-detail" onclick="applyDecision('NEEDS DETAIL', '#E8A030')" class="stamp-btn w-full bg-[#E8A030] text-[#121210]">
+              <i class="ti ti-info-circle text-3xl"></i>
+              <span class="text-sm tracking-wider">NEEDS DETAIL</span>
+              <span class="font-mono text-[10px] opacity-80 normal-case tracking-normal">⌘ + D</span>
+            </button>
+
+            <!-- POLICY CHECKLIST WIDGET -->
+            <div class="brut bg-white p-3.5 mt-4">
+              <div class="font-mono text-[10px] tracking-widest opacity-60 uppercase mb-2">POLICY RULES</div>
+              <div class="text-xs py-1 flex justify-between border-b border-[#121210]/10">
+                <span>3-quote Rule</span><span class="text-[#2E8C42] font-bold">PASS ✓</span>
               </div>
-              <span class="text-cyan-400 text-[10px] uppercase font-bold tracking-widest">LIVE_TELEMETRY</span>
+              <div class="text-xs py-1 flex justify-between border-b border-[#121210]/10">
+                <span>Budget CapEx</span><span class="text-[#2E8C42] font-bold">62% [OK]</span>
+              </div>
+              <div class="text-xs py-1 flex justify-between border-b border-[#121210]/10">
+                <span>Vendor KYC</span><span class="text-[#2E8C42] font-bold">VERIFIED</span>
+              </div>
+              <div class="text-xs py-1 flex justify-between">
+                <span>SLA Risk</span><span class="text-[#E8A030] font-bold">3D LEFT</span>
+              </div>
             </div>
 
-            <div class="space-y-2 text-slate-400">
-              <p><span class="text-cyan-400">root@zero-hour:~$</span> init spatial_pipeline --gl-version 2.0</p>
-              <p class="text-emerald-400">✓ WebGL 2.0 context instantiated [Renderer: High-Performance GPU]</p>
-              <p class="text-slate-400">ℹ Buffer allocated: <span id="log-vertices" class="text-white font-bold">2,420</span> vertices rendered</p>
-              <p class="text-slate-400">ℹ Physics state: <span class="text-purple-400">KINETIC_EULER_PASSIVE</span></p>
-              <p><span class="text-cyan-400">root@zero-hour:~$</span> stream user_spatial_input --track-pointer</p>
-              <div class="p-3 bg-black/40 rounded-xl border border-white/5 mt-4">
-                <div class="flex justify-between text-[11px] mb-1">
-                  <span>Pointer Normalized Vector:</span>
-                  <span id="pointer-coords" class="text-cyan-400 font-mono">X: 0.00 | Y: 0.00</span>
-                </div>
-                <div class="w-full bg-slate-800 h-2 rounded-full overflow-hidden">
-                  <div id="activity-bar" class="bg-gradient-to-r from-cyan-400 to-purple-500 h-full w-2/3 transition-all duration-150"></div>
-                </div>
+          </div>
+        </div>
+
+        <!-- AUDIT LOG TERMINAL -->
+        <div class="mt-6 brut bg-[#121210] text-[#FFFFFF] p-5 shadow-lg">
+          <div class="flex items-center justify-between mb-3">
+            <div class="font-display font-bold text-lg flex items-center gap-2"><i class="ti ti-list-details text-[#2E8C42]"></i>IMMUTABLE AUDIT LOG</div>
+            <span class="font-mono text-[10px] opacity-60 tracking-wider">SHA-256 STATE CHAIN</span>
+          </div>
+          <pre id="audit-terminal-log" class="font-mono text-xs leading-6 whitespace-pre-wrap opacity-90 overflow-x-auto">
+2026-10-15 09:11:02Z  CREATED   devin.park@stamply.io     PO-2025-0418 submitted · $48,920.00
+2026-10-15 09:11:04Z  ROUTED    system                    → chain "CapEx ≥ $25k" (4 stages)
+2026-10-15 09:18:47Z  STAMPED   anna.klein@stamply.io     APPROVED · stage 1/4 · note: "Ops signed off."
+2026-10-15 09:31:12Z  STAMPED   ryo.sato@stamply.io       APPROVED · stage 2/4 · attach: 3-quote-comparison.pdf
+2026-10-15 09:41:55Z  VIEWED    mara.vossberg@stamply.io  stage 3/4 — awaiting decision
+2026-10-15 13:42:18Z  ─        ─                         session active · awaiting CFO digital stamp …▌</pre>
+        </div>
+
+        <!-- HISTORY MINI TABLE SECTION -->
+        <div id="history-table-section" class="mt-6 brut bg-[#FFFFFF] overflow-hidden">
+          <div class="flex items-center justify-between p-4 border-b-[3px] border-[#121210]">
+            <div class="font-display font-bold text-lg flex items-center gap-2"><i class="ti ti-archive"></i>RECENTLY STAMPED TRANSACTIONS</div>
+            <button class="text-xs font-mono underline hover:text-[#2E8C42] font-bold">EXPORT CSV (2,481) →</button>
+          </div>
+          <div class="overflow-x-auto">
+            <table class="w-full font-mono text-xs sm:text-sm">
+              <thead class="bg-[#CFE8D6]">
+                <tr class="border-b-[3px] border-[#121210]">
+                  <th class="text-left p-3 text-xs tracking-widest font-bold">ID</th>
+                  <th class="text-left p-3 text-xs tracking-widest font-bold">VENDOR</th>
+                  <th class="text-right p-3 text-xs tracking-widest font-bold">AMOUNT</th>
+                  <th class="text-left p-3 text-xs tracking-widest font-bold">ACTOR</th>
+                  <th class="text-left p-3 text-xs tracking-widest font-bold">TIMESTAMP</th>
+                  <th class="text-right p-3 text-xs tracking-widest font-bold">STATUS</th>
+                </tr>
+              </thead>
+              <tbody id="history-tbody">
+                <tr class="border-b border-[#121210]/30"><td class="p-3 font-bold">EXP-9912</td><td class="p-3">Linear B.V.</td><td class="text-right p-3">$1,440.00</td><td class="p-3">M. Vossberg</td><td class="p-3 opacity-70">15 OCT · 08:21</td><td class="text-right p-3"><span class="stamp text-[#2E8C42] text-[10px]" style="transform:rotate(-2deg);">APPROVED</span></td></tr>
+                <tr class="border-b border-[#121210]/30"><td class="p-3 font-bold">PO-2025-0417</td><td class="p-3">Kuehne+Nagel</td><td class="text-right p-3">$18,250.00</td><td class="p-3">R. Sato</td><td class="p-3 opacity-70">14 OCT · 17:04</td><td class="text-right p-3"><span class="stamp text-[#C03A3A] text-[10px]" style="transform:rotate(2deg);">REJECTED</span></td></tr>
+                <tr class="border-b border-[#121210]/30"><td class="p-3 font-bold">EXP-9908</td><td class="p-3">DoorDash for Teams</td><td class="text-right p-3">$482.16</td><td class="p-3">A. Klein</td><td class="p-3 opacity-70">14 OCT · 14:48</td><td class="text-right p-3"><span class="stamp text-[#E8A030] text-[10px]" style="transform:rotate(-2deg);">NEEDS DETAIL</span></td></tr>
+                <tr><td class="p-3 font-bold">PO-2025-0416</td><td class="p-3">Notion Labs Inc.</td><td class="text-right p-3">$9,720.00</td><td class="p-3">M. Vossberg</td><td class="p-3 opacity-70">14 OCT · 11:12</td><td class="text-right p-3"><span class="stamp text-[#2E8C42] text-[10px]" style="transform:rotate(-2deg);">APPROVED</span></td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- WORKFLOW BUILDER STAGES -->
+        <div id="workflow-builder-section" class="mt-6 brut bg-[#FFFFFF] overflow-hidden">
+          <div class="flex items-center justify-between p-4 border-b-[3px] border-[#121210] flex-wrap gap-2">
+            <div>
+              <div class="font-display font-bold text-lg flex items-center gap-2"><i class="ti ti-git-merge text-[#2E8C42]"></i>WORKFLOW BUILDER — "CapEx ≥ $25k"</div>
+              <div class="text-xs font-mono opacity-60 mt-0.5">Drag & drop policy pipeline · 4 stages active</div>
+            </div>
+            <div class="flex gap-2">
+              <button onclick="alert('Stage Added')" class="brut-sm bg-[#FFFFFF] px-3 py-1 text-xs font-display font-bold btn-press">+ STAGE</button>
+              <button onclick="alert('Workflow Published')" class="brut-sm bg-[#2E8C42] text-white px-3 py-1 text-xs font-display font-bold btn-press">PUBLISH</button>
+            </div>
+          </div>
+          <div class="polka p-6 overflow-x-auto">
+            <div class="flex items-center gap-2 min-w-[700px]">
+              <div class="brut bg-[#CFE8D6] px-4 py-3 shrink-0">
+                <div class="font-mono text-[9px] opacity-60">TRIGGER</div>
+                <div class="font-display font-bold text-sm">New Request</div>
+              </div>
+              <div class="flex items-center"><div class="w-4 h-1 bg-[#121210]"></div><div class="w-0 h-0" style="border-top:5px solid transparent;border-bottom:5px solid transparent;border-left:6px solid #121210"></div></div>
+              <div class="brut bg-[#FFFFFF] px-4 py-3 shrink-0">
+                <div class="font-mono text-[9px] opacity-60">STAGE 1 · MGR</div>
+                <div class="font-display font-bold text-sm">Direct Manager</div>
+                <div class="text-[9px] font-mono opacity-60">SLA: 24h</div>
+              </div>
+              <div class="flex items-center"><div class="w-4 h-1 bg-[#121210]"></div><div class="w-0 h-0" style="border-top:5px solid transparent;border-bottom:5px solid transparent;border-left:6px solid #121210"></div></div>
+              <div class="brut bg-[#FFFFFF] px-4 py-3 shrink-0">
+                <div class="font-mono text-[9px] opacity-60">STAGE 2 · FIN</div>
+                <div class="font-display font-bold text-sm">Fin Controller</div>
+                <div class="text-[9px] font-mono opacity-60">SLA: 48h</div>
+              </div>
+              <div class="flex items-center"><div class="w-4 h-1 bg-[#121210]"></div><div class="w-0 h-0" style="border-top:5px solid transparent;border-bottom:5px solid transparent;border-left:6px solid #121210"></div></div>
+              <div class="brut bg-[#E8A030] px-4 py-3 shrink-0">
+                <div class="font-mono text-[9px] opacity-80">STAGE 3 · EXEC</div>
+                <div class="font-display font-bold text-sm">CFO Review</div>
+                <div class="text-[9px] font-mono">SLA: 72h</div>
+              </div>
+              <div class="flex items-center"><div class="w-4 h-1 bg-[#121210]"></div><div class="w-0 h-0" style="border-top:5px solid transparent;border-bottom:5px solid transparent;border-left:6px solid #121210"></div></div>
+              <div class="brut bg-white px-4 py-3 border-dashed shrink-0 opacity-70">
+                <div class="font-mono text-[9px] opacity-60">STAGE 4 · COND.</div>
+                <div class="font-display font-bold text-sm">Board (≥ $50k)</div>
+                <div class="text-[9px] font-mono">Conditional</div>
+              </div>
+              <div class="flex items-center"><div class="w-4 h-1 bg-[#121210]"></div><div class="w-0 h-0" style="border-top:5px solid transparent;border-bottom:5px solid transparent;border-left:6px solid #2E8C42"></div></div>
+              <div class="brut bg-[#2E8C42] text-white px-4 py-3 shrink-0">
+                <div class="font-mono text-[9px] opacity-80">OUTCOME</div>
+                <div class="font-display font-bold text-sm">Auto-Pay & Ledger</div>
               </div>
             </div>
           </div>
-
-        </div>
-      </div>
-    </section>
-
-    <!-- ARCHITECTURE / WORKFLOW -->
-    <section id="workflow" class="py-20 px-4 sm:px-8 max-w-7xl mx-auto">
-      <div class="text-center max-w-2xl mx-auto mb-16">
-        <span class="text-xs font-mono uppercase tracking-widest text-cyan-400">Zero Hour Sprint Division</span>
-        <h2 class="font-display text-3xl sm:text-4xl font-extrabold text-white mt-2">Team Execution Blueprint</h2>
-      </div>
-
-      <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-        <div class="glass-panel p-6 rounded-2xl border border-white/10">
-          <div class="text-cyan-400 font-mono text-xs font-bold mb-2">01 // MEMBER ONE</div>
-          <h4 class="text-white font-bold text-lg mb-2">Spatial 3D Hero & Physics</h4>
-          <p class="text-slate-400 text-sm">Three.js orbital physics, dynamic shader uniforms, responsive viewport matrix scaling.</p>
         </div>
 
-        <div class="glass-panel p-6 rounded-2xl border border-white/10">
-          <div class="text-purple-400 font-mono text-xs font-bold mb-2">02 // MEMBER TWO</div>
-          <h4 class="text-white font-bold text-lg mb-2">3D Tilt Cards & Telemetry</h4>
-          <p class="text-slate-400 text-sm">Glassmorphic optics, real-time gyro perspective calculations, live benchmark metrics.</p>
+        <!-- ESCALATION QUEUE STRIP -->
+        <div id="escalation-section" class="mt-6 brut overflow-hidden stripes-amber p-1">
+          <div class="bg-[#CFE8D6] p-4">
+            <div class="flex items-center justify-between mb-4 flex-wrap gap-2">
+              <div class="font-display font-bold text-lg flex items-center gap-2"><i class="ti ti-alert-triangle text-[#C03A3A]"></i>ESCALATION QUEUE · 3 PAST SLA</div>
+              <span class="font-mono text-[10px] opacity-60">AUTO-ESCALATES AT +24H MARK</span>
+            </div>
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+              <div class="brut bg-white p-4 border-[#C03A3A] cursor-pointer" onclick="selectPO(2)">
+                <div class="flex justify-between items-start">
+                  <span class="tag bg-[#C03A3A] text-white">+52H LATE</span>
+                  <i class="ti ti-flame text-xl text-[#C03A3A]"></i>
+                </div>
+                <div class="font-display font-bold text-base mt-2">Brunswick Catering</div>
+                <div class="font-mono font-bold text-lg mt-1 text-[#C03A3A]">$12,480.50</div>
+                <div class="text-xs opacity-60 mt-1">Stuck at: Fin Controller</div>
+              </div>
+
+              <div class="brut bg-white p-4 border-[#E8A030] cursor-pointer">
+                <div class="flex justify-between items-start">
+                  <span class="tag bg-[#E8A030]">+18H LATE</span>
+                  <i class="ti ti-alert-triangle text-xl text-[#E8A030]"></i>
+                </div>
+                <div class="font-display font-bold text-base mt-2">CloudFlare Ent.</div>
+                <div class="font-mono font-bold text-lg mt-1">$8,200.00</div>
+                <div class="text-xs opacity-60 mt-1">Stuck at: Director</div>
+              </div>
+
+              <div class="brut bg-white p-4 border-[#C03A3A] cursor-pointer">
+                <div class="flex justify-between items-start">
+                  <span class="tag bg-[#C03A3A] text-white">+71H LATE</span>
+                  <i class="ti ti-flame text-xl text-[#C03A3A]"></i>
+                </div>
+                <div class="font-display font-bold text-base mt-2">Bosch Mobility</div>
+                <div class="font-mono font-bold text-lg mt-1 text-[#C03A3A]">$61,440.00</div>
+                <div class="text-xs opacity-60 mt-1">Stuck at: Board review</div>
+              </div>
+            </div>
+          </div>
         </div>
 
-        <div class="glass-panel p-6 rounded-2xl border border-white/10">
-          <div class="text-emerald-400 font-mono text-xs font-bold mb-2">03 // MEMBER THREE</div>
-          <h4 class="text-white font-bold text-lg mb-2">Matrix Simulator & Sound FX</h4>
-          <p class="text-slate-400 text-sm">Interactive control matrix, synthetic Web Audio click triggers, mobile responsive shell.</p>
-        </div>
-      </div>
-    </section>
-
-    <!-- FOOTER -->
-    <footer class="border-t border-white/10 py-12 px-6 glass-panel relative z-10 text-center text-xs text-slate-500 font-mono">
-      <div class="max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-4">
-        <div class="flex items-center gap-2">
-          <span class="w-2 h-2 rounded-full bg-cyan-400"></span>
-          <span>BUILT FOR ZERO HOUR UI/UX CHALLENGE</span>
-        </div>
-        <p>© 2026 ZERO-HOUR TEAM // 3D SPATIAL COMPUTING EXPERIENCE</p>
-        <div class="flex items-center gap-4 text-slate-400">
-          <a href="https://github.com/skandakn/ui-ux-for-zero-hour" target="_blank" class="hover:text-cyan-400 flex items-center gap-1 transition-colors">
-            <i data-lucide="github" class="w-4 h-4"></i> GitHub Repo
-          </a>
-        </div>
-      </div>
-    </footer>
-
+      </section>
+    </div>
   </main>
+</div>
 
-  <!-- JAVASCRIPT: THREE.JS & INTERACTIVE LOGIC -->
-  <script>
-    // Lucide Icons Initialization
-    lucide.createIcons();
+<!-- LOGIC & 3D WEBGL ENGINE -->
+<script>
+  /* ========================================================
+     1. THREE.JS 3D KINETIC AUDIT SEAL
+     ======================================================== */
+  const sealContainer = document.getElementById('three-seal-container');
+  const scene = new THREE.Scene();
+  const camera = new THREE.PerspectiveCamera(45, sealContainer.clientWidth / sealContainer.clientHeight, 0.1, 100);
+  const renderer = new THREE.WebGLRenderer({ alpha: true, antialias: true });
+  renderer.setSize(sealContainer.clientWidth, sealContainer.clientHeight);
+  renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+  renderer.domElement.id = 'seal-3d-canvas';
+  sealContainer.appendChild(renderer.domElement);
 
-    /* ========================================================
-       1. THREE.JS 3D SPATIAL ENGINE
-       ======================================================== */
-    const container = document.getElementById('canvas-container');
-    const scene = new THREE.Scene();
-    const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
-    const renderer = new THREE.WebGLRenderer({ alpha: true, antialias: true });
-    renderer.setSize(window.innerWidth, window.innerHeight);
-    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
-    container.appendChild(renderer.domElement);
+  // Group for rotation
+  const tokenGroup = new THREE.Group();
+  scene.add(tokenGroup);
 
-    // Dynamic 3D Materials
-    let primaryColor = new THREE.Color(0x00F0FF);
-    let wireframeColor = new THREE.Color(0x8B5CF6);
+  // Gold metallic material for brutalist seal
+  const brassMaterial = new THREE.MeshStandardMaterial({
+    color: 0x2E8C42,
+    metalness: 0.85,
+    roughness: 0.25,
+    wireframe: false
+  });
 
-    const mainMaterial = new THREE.MeshStandardMaterial({
-      color: 0x090D16,
-      roughness: 0.2,
-      metalness: 0.9,
-      wireframe: false
+  const rimMaterial = new THREE.MeshStandardMaterial({
+    color: 0x121210,
+    metalness: 0.9,
+    roughness: 0.3
+  });
+
+  // Cylinder Token / Seal
+  const cylinderGeo = new THREE.CylinderGeometry(1.6, 1.6, 0.35, 32);
+  const sealMesh = new THREE.Mesh(cylinderGeo, brassMaterial);
+  tokenGroup.add(sealMesh);
+
+  // Rim ring
+  const torusGeo = new THREE.TorusGeometry(1.65, 0.08, 16, 64);
+  const rimMesh = new THREE.Mesh(torusGeo, rimMaterial);
+  rimMesh.rotation.x = Math.PI / 2;
+  tokenGroup.add(rimMesh);
+
+  // Lighting
+  const light1 = new THREE.DirectionalLight(0xffffff, 2.2);
+  light1.position.set(5, 5, 5);
+  scene.add(light1);
+
+  const light2 = new THREE.PointLight(0x2E8C42, 3, 10);
+  light2.position.set(-3, -3, 2);
+  scene.add(light2);
+
+  const amb = new THREE.AmbientLight(0xffffff, 0.8);
+  scene.add(amb);
+
+  camera.position.z = 4.8;
+  tokenGroup.rotation.x = 0.5;
+
+  // Mouse Interaction for 3D Seal
+  let isDragging = false;
+  let previousMouseX = 0, previousMouseY = 0;
+
+  sealContainer.addEventListener('mousedown', (e) => {
+    isDragging = true;
+    previousMouseX = e.clientX;
+    previousMouseY = e.clientY;
+  });
+
+  window.addEventListener('mouseup', () => { isDragging = false; });
+
+  window.addEventListener('mousemove', (e) => {
+    if (!isDragging) return;
+    const deltaX = e.clientX - previousMouseX;
+    const deltaY = e.clientY - previousMouseY;
+    tokenGroup.rotation.y += deltaX * 0.02;
+    tokenGroup.rotation.x += deltaY * 0.02;
+    previousMouseX = e.clientX;
+    previousMouseY = e.clientY;
+  });
+
+  // Resize handler for seal
+  window.addEventListener('resize', () => {
+    if (!sealContainer) return;
+    camera.aspect = sealContainer.clientWidth / sealContainer.clientHeight;
+    camera.updateProjectionMatrix();
+    renderer.setSize(sealContainer.clientWidth, sealContainer.clientHeight);
+  });
+
+  function animateSeal() {
+    requestAnimationFrame(animateSeal);
+    if (!isDragging) {
+      tokenGroup.rotation.y += 0.015;
+    }
+    renderer.render(scene, camera);
+  }
+  animateSeal();
+
+  /* ========================================================
+     2. MOCK PO DATABASE & DYNAMIC DOCUMENT SWITCHER
+     ======================================================== */
+  const PO_DATA = [
+    {
+      id: "PO-2025-0418",
+      vendor: "Helvetica Logistics Co.",
+      location: "Zurich · CH-8005",
+      category: "CapEx · Warehouse",
+      due: "17 MAR 2025",
+      total: "$48,920.00",
+      subtotal: "48,920.00",
+      items: [
+        { desc: "Heavy-duty pallet racking, 4-tier", qty: 24, unit: "1,280.00", amount: "30,720.00" },
+        { desc: "Anchor bolts (M16) — case of 50", qty: 12, unit: "86.40", amount: "1,036.80" },
+        { desc: "Installation labor · 3-day crew", qty: 1, unit: "14,800.00", amount: "14,800.00" },
+        { desc: "Freight + customs handling", qty: 1, unit: "2,363.20", amount: "2,363.20" }
+      ]
+    },
+    {
+      id: "EXP-9921",
+      vendor: "Figma Inc.",
+      location: "San Francisco · CA-94103",
+      category: "Software · Design Seats",
+      due: "24 MAR 2025",
+      total: "$3,960.00",
+      subtotal: "3,960.00",
+      items: [
+        { desc: "Figma Enterprise License (Annual)", qty: 22, unit: "180.00", amount: "3,960.00" }
+      ]
+    },
+    {
+      id: "PO-2025-0402",
+      vendor: "Brunswick Catering Ltd.",
+      location: "London · EC2A 4NE",
+      category: "People Ops · Events",
+      due: "11 MAR 2025 (PAST SLA)",
+      total: "$12,480.50",
+      subtotal: "12,480.50",
+      items: [
+        { desc: "Off-site Catering & Beverage package", qty: 140, unit: "75.00", amount: "10,500.00" },
+        { desc: "Staffing & service surcharge", qty: 1, unit: "1,980.50", amount: "1,980.50" }
+      ]
+    },
+    {
+      id: "EXP-9918",
+      vendor: "AWS Cloud Infrastructure",
+      location: "Seattle · WA-98109",
+      category: "Infrastructure · Compute",
+      due: "Auto-Debit (ACH)",
+      total: "$27,304.18",
+      subtotal: "27,304.18",
+      items: [
+        { desc: "EC2 & EKS Kubernetes Cluster Usage", qty: 1, unit: "18,420.00", amount: "18,420.00" },
+        { desc: "Aurora PostgreSQL Multi-AZ Storage", qty: 1, unit: "6,884.18", amount: "6,884.18" },
+        { desc: "CloudFront CDN Data Egress", qty: 1, unit: "2,000.00", amount: "2,000.00" }
+      ]
+    }
+  ];
+
+  let currentPOIndex = 0;
+
+  function selectPO(index, cardEl) {
+    currentPOIndex = index;
+    const po = PO_DATA[index];
+
+    // Highlight active card
+    document.querySelectorAll('.req-card').forEach(c => c.classList.remove('active-card'));
+    if (cardEl) cardEl.classList.add('active-card');
+
+    // Update Document DOM
+    document.getElementById('doc-title').innerText = po.id.startsWith('PO') ? 'PURCHASE ORDER' : 'EXPENSE REIMBURSEMENT';
+    document.getElementById('doc-id-date').innerText = `${po.id} · ISSUED 14 MAR 2025`;
+    document.getElementById('doc-vendor').innerText = po.vendor;
+    document.getElementById('doc-location').innerText = po.location;
+    document.getElementById('doc-category').innerText = po.category;
+    document.getElementById('doc-due').innerText = po.due;
+    document.getElementById('doc-total').innerText = po.total;
+    document.getElementById('doc-subtotal').innerText = po.subtotal;
+
+    // Line items
+    const tbody = document.getElementById('line-items-body');
+    tbody.innerHTML = '';
+    po.items.forEach(item => {
+      const tr = document.createElement('tr');
+      tr.className = "border-b border-[#121210]/20";
+      tr.innerHTML = `
+        <td class="py-2.5">${item.desc}</td>
+        <td class="text-right">${item.qty}</td>
+        <td class="text-right">${item.unit}</td>
+        <td class="text-right">${item.amount}</td>
+      `;
+      tbody.appendChild(tr);
     });
 
-    const wireMaterial = new THREE.MeshBasicMaterial({
-      color: primaryColor,
-      wireframe: true,
-      transparent: true,
-      opacity: 0.5
+    // Clear previous big stamp watermark
+    document.getElementById('stamp-drop').innerHTML = '';
+
+    // Play subtle click
+    playSynthTone(480, 0.08);
+
+    // GSAP entrance flash
+    gsap.from('#invoice', { y: 8, opacity: 0.9, duration: 0.25, ease: 'power2.out' });
+  }
+
+  /* ========================================================
+     3. STAMP DECISION ENGINE & SOUND FX
+     ======================================================== */
+  let audioCtx = null;
+  function playSynthTone(freq, duration) {
+    try {
+      if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+      if (audioCtx.state === 'suspended') audioCtx.resume();
+      const osc = audioCtx.createOscillator();
+      const gain = audioCtx.createGain();
+      osc.type = 'triangle';
+      osc.frequency.setValueAtTime(freq, audioCtx.currentTime);
+      gain.gain.setValueAtTime(0.08, audioCtx.currentTime);
+      gain.gain.exponentialRampToValueAtTime(0.0001, audioCtx.currentTime + duration);
+      osc.connect(gain);
+      gain.connect(audioCtx.destination);
+      osc.start();
+      osc.stop(audioCtx.currentTime + duration);
+    } catch(e) {}
+  }
+
+  function applyDecision(label, color) {
+    const drop = document.getElementById('stamp-drop');
+    const invoice = document.getElementById('invoice');
+    drop.innerHTML = '';
+
+    const el = document.createElement('div');
+    el.className = 'big-stamp';
+    el.textContent = label;
+    el.style.color = color;
+    drop.appendChild(el);
+
+    // Audio mechanical thud
+    playSynthTone(120, 0.25);
+    setTimeout(() => playSynthTone(400, 0.1), 80);
+
+    // Stamp Animation
+    gsap.fromTo(el, 
+      { scale: 3.2, rotation: -20, opacity: 0 },
+      { scale: 1, rotation: -7, opacity: 0.88, duration: 0.45, ease: 'back.out(2)' }
+    );
+
+    // Invoice physical shake
+    gsap.to(invoice, {
+      x: -6,
+      repeat: 3,
+      yoyo: true,
+      duration: 0.06,
+      ease: 'power1.inOut',
+      onComplete: () => { gsap.set(invoice, { x: 0 }); }
     });
 
-    // Mesh Group
-    const meshGroup = new THREE.Group();
-    scene.add(meshGroup);
+    // Animate 3D Seal spin burst
+    tokenGroup.rotation.y += Math.PI * 2;
+    brassMaterial.color.set(color === '#2E8C42' ? 0x2E8C42 : (color === '#C03A3A' ? 0xC03A3A : 0xE8A030));
 
-    // Initial Geometries
-    let currentGeoType = 'icosahedron';
-    let solidMesh, wireMesh;
+    // Append to Audit Terminal
+    const po = PO_DATA[currentPOIndex];
+    const log = document.getElementById('audit-terminal-log');
+    const now = new Date().toISOString().replace('T', ' ').substring(0, 19) + 'Z';
+    log.innerText += `\n${now}  DECISION  mara.vossberg@stamply.io  ${label} · ${po.id} · ${po.total}`;
+    log.scrollTop = log.scrollHeight;
 
-    function buildMesh(type) {
-      if (solidMesh) meshGroup.remove(solidMesh);
-      if (wireMesh) meshGroup.remove(wireMesh);
+    // Increment counter
+    const countEl = document.getElementById('stamped-count');
+    countEl.innerText = parseInt(countEl.innerText) + 1;
+  }
 
-      let geo;
-      if (type === 'icosahedron') geo = new THREE.IcosahedronGeometry(2.4, 2);
-      else if (type === 'torus') geo = new THREE.TorusKnotGeometry(1.6, 0.5, 128, 32);
-      else if (type === 'octahedron') geo = new THREE.OctahedronGeometry(2.5, 2);
+  function stampRandomSeal() {
+    const choices = [
+      { label: 'APPROVED', color: '#2E8C42' },
+      { label: 'REJECTED', color: '#C03A3A' },
+      { label: 'NEEDS DETAIL', color: '#E8A030' }
+    ];
+    const pick = choices[Math.floor(Math.random() * choices.length)];
+    applyDecision(pick.label, pick.color);
+  }
 
-      solidMesh = new THREE.Mesh(geo, mainMaterial);
-      wireMesh = new THREE.Mesh(geo, wireMaterial);
-      wireMesh.scale.set(1.02, 1.02, 1.02);
+  function scrollToSection(id) {
+    const el = document.getElementById(id);
+    if (el) el.scrollIntoView({ behavior: 'smooth' });
+  }
 
-      meshGroup.add(solidMesh);
-      meshGroup.add(wireMesh);
-
-      // Update log telemetry
-      const logVertices = document.getElementById('log-vertices');
-      if (logVertices && geo.attributes.position) {
-        logVertices.innerText = (geo.attributes.position.count).toLocaleString();
-      }
-    }
-    buildMesh(currentGeoType);
-
-    // Surrounding Particle Field
-    let particleCount = 1500;
-    let particleGeo = new THREE.BufferGeometry();
-    let particlePositions = new Float32Array(particleCount * 3);
-
-    for (let i = 0; i < particleCount * 3; i += 3) {
-      particlePositions[i] = (Math.random() - 0.5) * 20;
-      particlePositions[i + 1] = (Math.random() - 0.5) * 20;
-      particlePositions[i + 2] = (Math.random() - 0.5) * 20;
-    }
-    particleGeo.setAttribute('position', new THREE.BufferAttribute(particlePositions, 3));
-
-    const particleMaterial = new THREE.PointsMaterial({
-      color: primaryColor,
-      size: 0.035,
-      transparent: true,
-      opacity: 0.6
+  function filterQueue(type) {
+    playSynthTone(550, 0.05);
+    const cards = document.querySelectorAll('.req-card');
+    cards.forEach(card => {
+      const text = card.innerText;
+      if (type === 'all') card.style.display = 'block';
+      else if (type === 'po' && text.includes('PO-')) card.style.display = 'block';
+      else if (type === 'expense' && text.includes('EXP-')) card.style.display = 'block';
+      else if (type === 'escalated' && text.includes('ESCALATED')) card.style.display = 'block';
+      else card.style.display = 'none';
     });
-    const particles = new THREE.Points(particleGeo, particleMaterial);
-    scene.add(particles);
+  }
 
-    // Dynamic Lights
-    const ambientLight = new THREE.AmbientLight(0xffffff, 0.4);
-    scene.add(ambientLight);
-
-    const pointLight1 = new THREE.PointLight(0x00F0FF, 3, 20);
-    pointLight1.position.set(5, 5, 5);
-    scene.add(pointLight1);
-
-    const pointLight2 = new THREE.PointLight(0x8B5CF6, 3, 20);
-    pointLight2.position.set(-5, -5, -3);
-    scene.add(pointLight2);
-
-    camera.position.z = 6;
-
-    // Mouse Tracking & Parallax
-    let mouseX = 0, mouseY = 0;
-    let targetX = 0, targetY = 0;
-    let rotationSpeedMultiplier = 1.0;
-
-    window.addEventListener('mousemove', (e) => {
-      mouseX = (e.clientX / window.innerWidth) * 2 - 1;
-      mouseY = -(e.clientY / window.innerHeight) * 2 + 1;
-
-      // Update UI Telemetry
-      const pointerCoords = document.getElementById('pointer-coords');
-      if (pointerCoords) {
-        pointerCoords.innerText = `X: ${mouseX.toFixed(2)} | Y: ${mouseY.toFixed(2)}`;
-      }
-      const activityBar = document.getElementById('activity-bar');
-      if (activityBar) {
-        const percent = Math.min(100, Math.max(15, Math.abs(mouseX * 60) + Math.abs(mouseY * 40)));
-        activityBar.style.width = `${percent}%`;
-      }
+  function filterSearch(query) {
+    const q = query.toLowerCase();
+    document.querySelectorAll('.req-card').forEach(card => {
+      card.style.display = card.innerText.toLowerCase().includes(q) ? 'block' : 'none';
     });
+  }
 
-    // Resize Handler
-    window.addEventListener('resize', () => {
-      camera.aspect = window.innerWidth / window.innerHeight;
-      camera.updateProjectionMatrix();
-      renderer.setSize(window.innerWidth, window.innerHeight);
+  function promptNewRequest() {
+    const vendor = prompt('Enter Vendor Name:', 'Supabase Inc.');
+    if (!vendor) return;
+    const amount = prompt('Enter Amount USD:', '2,400.00');
+    if (!amount) return;
+
+    PO_DATA.unshift({
+      id: "PO-2025-" + Math.floor(1000 + Math.random() * 9000),
+      vendor: vendor,
+      location: "San Francisco · CA",
+      category: "Software · Cloud DB",
+      due: "28 MAR 2025",
+      total: "$" + amount,
+      subtotal: amount,
+      items: [
+        { desc: "Dedicated Compute Addon", qty: 1, unit: amount, amount: amount }
+      ]
     });
+    alert('Request ' + PO_DATA[0].id + ' added to Queue!');
+    selectPO(0);
+  }
 
-    // Main 60FPS Render Loop
-    function animate() {
-      requestAnimationFrame(animate);
-
-      // Smooth Lerp
-      targetX += (mouseX - targetX) * 0.05;
-      targetY += (mouseY - targetY) * 0.05;
-
-      meshGroup.rotation.y += 0.005 * rotationSpeedMultiplier;
-      meshGroup.rotation.x += 0.003 * rotationSpeedMultiplier;
-
-      // Interactive mouse tilt
-      meshGroup.rotation.y = targetX * 0.8;
-      meshGroup.rotation.x = -targetY * 0.8;
-
-      particles.rotation.y += 0.0008 * rotationSpeedMultiplier;
-
-      renderer.render(scene, camera);
-    }
-    animate();
-
-    /* ========================================================
-       2. INTERACTIVE CONTROLS & API
-       ======================================================== */
-    function setGeometry(type) {
-      currentGeoType = type;
-      buildMesh(type);
-      playSynthTone(520, 0.1);
-    }
-
-    function changeGeometry() {
-      const types = ['icosahedron', 'torus', 'octahedron'];
-      const nextIndex = (types.indexOf(currentGeoType) + 1) % types.length;
-      setGeometry(types[nextIndex]);
-    }
-
-    function toggleWireframe() {
-      wireMaterial.wireframe = !wireMaterial.wireframe;
-      playSynthTone(640, 0.08);
-    }
-
-    function speedUpMesh() {
-      rotationSpeedMultiplier = rotationSpeedMultiplier === 1.0 ? 3.5 : 1.0;
-      const speedVal = document.getElementById('speed-val');
-      const slider = document.getElementById('slider-speed');
-      if (speedVal) speedVal.innerText = `${rotationSpeedMultiplier}x`;
-      if (slider) slider.value = rotationSpeedMultiplier;
-      playSynthTone(780, 0.12);
-    }
-
-    function updateSpeed(val) {
-      rotationSpeedMultiplier = parseFloat(val);
-      document.getElementById('speed-val').innerText = `${val}x`;
-    }
-
-    function updateParticles(val) {
-      document.getElementById('particle-val').innerText = parseInt(val).toLocaleString();
-      particleMaterial.size = (val / 1500) * 0.035;
-    }
-
-    function setThemeColor(hex1, hex2) {
-      primaryColor.set(hex1);
-      wireMaterial.color.set(hex1);
-      particleMaterial.color.set(hex1);
-      pointLight1.color.set(hex1);
-      pointLight2.color.set(hex2);
-      playSynthTone(440, 0.1);
-    }
-
-    /* ========================================================
-       3. 3D CARD PERSPECTIVE TILT
-       ======================================================== */
-    function handleTilt(e, card) {
-      const rect = card.getBoundingClientRect();
-      const x = e.clientX - rect.left;
-      const y = e.clientY - rect.top;
-      const centerX = rect.width / 2;
-      const centerY = rect.height / 2;
-      const rotateX = ((y - centerY) / centerY) * -12;
-      const rotateY = ((x - centerX) / centerX) * 12;
-
-      card.style.transform = `perspective(1000px) rotateX(${rotateX}deg) rotateY(${rotateY}deg) scale3d(1.02, 1.02, 1.02)`;
-    }
-
-    function resetTilt(card) {
-      card.style.transform = `perspective(1000px) rotateX(0deg) rotateY(0deg) scale3d(1, 1, 1)`;
-    }
-
-    /* ========================================================
-       4. SYNTHESIZED WEB AUDIO UI SOUND FX
-       ======================================================== */
-    let audioCtx = null;
-    let soundEnabled = true;
-
-    function playSynthTone(freq, duration) {
-      if (!soundEnabled) return;
-      try {
-        if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-        if (audioCtx.state === 'suspended') audioCtx.resume();
-        const osc = audioCtx.createOscillator();
-        const gain = audioCtx.createGain();
-        osc.type = 'sine';
-        osc.frequency.setValueAtTime(freq, audioCtx.currentTime);
-        gain.gain.setValueAtTime(0.04, audioCtx.currentTime);
-        gain.gain.exponentialRampToValueAtTime(0.0001, audioCtx.currentTime + duration);
-        osc.connect(gain);
-        gain.connect(audioCtx.destination);
-        osc.start();
-        osc.stop(audioCtx.currentTime + duration);
-      } catch (e) {}
-    }
-
-    function toggleSoundFX() {
-      soundEnabled = !soundEnabled;
-      const icon = document.getElementById('sound-icon');
-      if (soundEnabled) {
-        icon.setAttribute('data-lucide', 'volume-2');
-        playSynthTone(550, 0.15);
-      } else {
-        icon.setAttribute('data-lucide', 'volume-x');
-      }
-      lucide.createIcons();
-    }
-  </script>
+  // Initial Entrance Animation
+  gsap.from('.req-card', { opacity: 0, y: 16, duration: 0.4, stagger: 0.07, ease: 'power2.out' });
+  gsap.from('#invoice', { opacity: 0, y: 20, duration: 0.5, ease: 'power2.out', delay: 0.1 });
+</script>
 </body>
 </html>
