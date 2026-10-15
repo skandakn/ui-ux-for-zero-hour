@@ -3,16 +3,19 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>APPROVA // Brutalist Finance Approval Dashboard & 3D Audit Widget</title>
+  <title>APPROVA // Fintech Approval Workflow & 3D Audit Dashboard</title>
+  
   <!-- Tailwind CSS CDN -->
   <script src="https://cdn.tailwindcss.com"></script>
   <!-- Three.js CDN for 3D Elements -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
-  <!-- Tabler & Lucide Icons -->
+  <!-- Canvas Confetti for Celebration on Approval -->
+  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+  <!-- Tabler Icons -->
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont/tabler-icons.min.css">
-  <script src="https://unpkg.com/lucide@latest"></script>
-  <!-- GSAP & AnimeJS -->
+  <!-- GSAP Animation Engine -->
   <script src="https://cdn.jsdelivr.net/npm/gsap@3/dist/gsap.min.js"></script>
+  
   <!-- Google Fonts: Archivo, Hanken Grotesk, Space Mono -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -23,7 +26,7 @@
     .font-display { font-family: 'Archivo', sans-serif; letter-spacing:-0.01em; }
     .font-mono { font-family: 'Space Mono', monospace; font-variant-numeric: tabular-nums; }
     
-    /* Neo-Brutalist Core System */
+    /* Neo-Brutalist Design Tokens */
     .brut { border: 3px solid #121210; box-shadow: 4px 4px 0 #121210; }
     .brut-lg { border: 3px solid #121210; box-shadow: 6px 6px 0 #121210; }
     .brut-sm { border: 2px solid #121210; box-shadow: 3px 3px 0 #121210; }
@@ -36,7 +39,7 @@
     .btn-press:active { transform: translate(4px,4px); box-shadow: 0 0 0 #121210 !important; }
     
     .stripes-amber { background-image: repeating-linear-gradient(45deg, #F4D89A, #F4D89A 12px, #E8A030 12px, #E8A030 14px); }
-    .grid-paper { background-image: linear-gradient(rgba(18,18,16,0.08) 1px,transparent 1px),linear-gradient(90deg,rgba(18,18,16,0.08) 1px,transparent 1px); background-size: 24px 24px; }
+    .grid-paper { background-image: linear-gradient(rgba(18,18,16,0.07) 1px,transparent 1px),linear-gradient(90deg,rgba(18,18,16,0.07) 1px,transparent 1px); background-size: 26px 26px; }
     .polka { background-image: radial-gradient(circle,#121210 1.5px,transparent 1.5px); background-size: 20px 20px; }
     .tab-active { background:#121210; color:#FFFFFF; }
     .nav-item:hover { transform: translate(-2px,-2px); box-shadow: 6px 6px 0 #121210; }
@@ -59,33 +62,25 @@
     .big-stamp {
       position: absolute;
       font-family: 'Archivo', sans-serif;
-      font-weight: 800;
-      font-size: 54px;
-      letter-spacing: 0.15em;
-      border: 7px solid currentColor;
-      padding: 14px 32px;
+      font-weight: 900;
+      font-size: 56px;
+      letter-spacing: 0.16em;
+      border: 8px solid currentColor;
+      padding: 14px 34px;
       border-radius: 6px;
       pointer-events: none;
       z-index: 40;
       text-transform: uppercase;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.15);
     }
     
     .tag { display:inline-flex; align-items:center; gap:5px; padding:3px 8px; border:2px solid #121210; font-weight:700; font-size:11px; letter-spacing:0.06em; text-transform:uppercase; }
-    .chain-node { width:26px; height:26px; border:2px solid #121210; border-radius:999px; display:inline-flex; align-items:center; justify-content:center; font-size:11px; font-weight:700; }
+    .chain-node { width:28px; height:28px; border:2px solid #121210; border-radius:999px; display:inline-flex; align-items:center; justify-content:center; font-size:11px; font-weight:700; }
     .chain-line { width:16px; height:3px; background:#121210; }
     
-    .stamp-btn { display:flex; flex-direction:column; align-items:center; justify-content:center; gap:6px; padding:16px 12px; border:3px solid #121210; box-shadow: 4px 4px 0 #121210; cursor:pointer; font-family:'Archivo'; font-weight:700; letter-spacing:0.1em; transition:all 0.15s ease; }
+    .stamp-btn { display:flex; flex-direction:column; align-items:center; justify-content:center; gap:6px; padding:18px 12px; border:3px solid #121210; box-shadow: 4px 4px 0 #121210; cursor:pointer; font-family:'Archivo'; font-weight:800; letter-spacing:0.1em; transition:all 0.15s ease; }
     .stamp-btn:hover { transform: translate(-2px,-2px); box-shadow: 6px 6px 0 #121210; }
     .stamp-btn:active { transform: translate(4px,4px); box-shadow: 0 0 0 #121210 !important; }
-    
-    /* 3D Canvas Box */
-    #seal-3d-canvas {
-      width: 100%;
-      height: 100%;
-      display: block;
-      cursor: grab;
-    }
-    #seal-3d-canvas:active { cursor: grabbing; }
 
     /* Custom Scrollbar */
     ::-webkit-scrollbar { width: 6px; height:6px; }
@@ -95,41 +90,63 @@
 </head>
 <body class="min-h-screen text-[#121210] selection:bg-[#2E8C42] selection:text-white">
 
+<!-- NOTIFICATION TOAST -->
+<div id="toast" class="fixed top-5 right-5 z-50 transform translate-y-[-100px] opacity-0 transition-all duration-300 pointer-events-none">
+  <div class="brut bg-white p-4 flex items-center gap-3">
+    <div id="toast-icon" class="w-8 h-8 rounded bg-[#2E8C42] text-white flex items-center justify-center font-bold text-lg">✓</div>
+    <div>
+      <div id="toast-title" class="font-display font-bold text-sm">Action Confirmed</div>
+      <div id="toast-desc" class="text-xs font-mono opacity-70">Transaction committed to ledger.</div>
+    </div>
+  </div>
+</div>
+
 <div class="min-h-screen flex flex-col xl:flex-row">
 
-  <!-- SIDEBAR NAVIGATION PANE -->
-  <aside class="w-full xl:w-[270px] shrink-0 bg-[#CFE8D6] border-b-[3px] xl:border-b-0 xl:border-r-[3px] border-[#121210] p-5 flex flex-col gap-2">
+  <!-- ==========================================
+       SIDEBAR NAVIGATION PANE
+       ========================================== -->
+  <aside class="w-full xl:w-[280px] shrink-0 bg-[#CFE8D6] border-b-[3px] xl:border-b-0 xl:border-r-[3px] border-[#121210] p-5 flex flex-col gap-2">
     <!-- Brand / Header -->
     <div class="flex items-center gap-3 mb-4">
-      <div class="w-11 h-11 bg-[#2E8C42] brut-sm flex items-center justify-center text-white">
-        <i class="ti ti-stamp text-2xl"></i>
+      <div class="w-12 h-12 bg-[#2E8C42] brut-sm flex items-center justify-center text-white">
+        <i class="ti ti-stamp text-3xl"></i>
       </div>
       <div>
-        <div class="font-display font-extrabold text-xl leading-none tracking-tight">APPROVA</div>
+        <div class="font-display font-black text-2xl leading-none tracking-tight">APPROVA</div>
         <div class="text-[10px] font-mono tracking-widest opacity-60">FINTECH OPS · AUDITABLE</div>
       </div>
     </div>
 
-    <!-- 3D KINETIC SEAL WIDGET -->
-    <div class="brut bg-white p-3 mb-2 relative overflow-hidden">
-      <div class="flex items-center justify-between mb-1">
-        <span class="font-mono text-[10px] font-bold tracking-widest text-[#2E8C42]">● 3D AUDIT SEAL</span>
-        <span class="font-mono text-[9px] bg-[#CFE8D6] px-1 border border-[#121210]">INTERACTIVE</span>
+    <!-- 3D KINETIC AUDIT SEAL WIDGET -->
+    <div class="brut bg-white p-3.5 mb-2 relative overflow-hidden">
+      <div class="flex items-center justify-between mb-1.5">
+        <span class="font-mono text-[10px] font-bold tracking-widest text-[#2E8C42] flex items-center gap-1.5">
+          <span class="w-2 h-2 rounded-full bg-[#2E8C42] animate-ping"></span> 3D AUDIT SEAL
+        </span>
+        <span class="font-mono text-[9px] bg-[#CFE8D6] px-1.5 py-0.5 border border-[#121210] font-bold">KINETIC</span>
       </div>
-      <div class="h-28 w-full bg-[#F4FAF6] border-2 border-[#121210] relative flex items-center justify-center overflow-hidden" id="three-seal-container">
-        <!-- Three.js Canvas injected here -->
-        <div class="absolute bottom-1 right-1 text-[9px] font-mono opacity-50 pointer-events-none">DRAG TO ROTATE</div>
+      
+      <!-- 3D Three.js Container -->
+      <div class="h-32 w-full bg-[#F4FAF6] border-2 border-[#121210] relative flex items-center justify-center overflow-hidden cursor-grab active:cursor-grabbing" id="three-seal-container">
+        <div class="absolute bottom-1 right-1.5 text-[8px] font-mono opacity-50 pointer-events-none uppercase">Drag 3D Coin</div>
       </div>
-      <button onclick="stampRandomSeal()" class="w-full mt-2 brut-sm bg-[#121210] text-white text-[11px] font-display font-bold py-1 btn-press flex items-center justify-center gap-1">
-        <i class="ti ti-rotate-clockwise text-xs"></i> TEST 3D STAMP FX
-      </button>
+
+      <div class="grid grid-cols-2 gap-1.5 mt-2">
+        <button onclick="trigger3DAction('APPROVED')" class="brut-sm bg-[#2E8C42] text-white text-[10px] font-display font-bold py-1 btn-press flex items-center justify-center gap-1">
+          <i class="ti ti-check"></i> 3D STAMP
+        </button>
+        <button onclick="switch3DMaterial()" class="brut-sm bg-white text-[10px] font-display font-bold py-1 btn-press flex items-center justify-center gap-1">
+          <i class="ti ti-palette"></i> COLOR
+        </button>
+      </div>
     </div>
 
-    <div class="text-[10px] font-mono tracking-widest opacity-50 mb-1 px-1">WORKSPACE INBOX</div>
+    <div class="text-[10px] font-mono tracking-widest opacity-50 mb-1 px-1">WORKSPACE QUEUES</div>
 
     <a class="nav-item brut bg-[#FFFFFF] flex items-center justify-between p-2.5 cursor-pointer" onclick="filterQueue('all')">
       <span class="flex items-center gap-2.5 font-display font-bold text-sm"><i class="ti ti-inbox text-lg"></i>Inbox</span>
-      <span class="bg-[#121210] text-[#FFFFFF] font-mono text-xs px-2 py-0.5">12</span>
+      <span class="bg-[#121210] text-[#FFFFFF] font-mono text-xs px-2 py-0.5" id="nav-inbox-count">12</span>
     </a>
     <a class="nav-item brut bg-[#E8A030] flex items-center justify-between p-2.5 cursor-pointer" onclick="filterQueue('escalated')">
       <span class="flex items-center gap-2.5 font-display font-bold text-sm"><i class="ti ti-flame text-lg"></i>Escalations</span>
@@ -143,7 +160,7 @@
       <i class="ti ti-git-merge text-lg"></i>Workflow Builder
     </a>
 
-    <!-- Bottom CFO Profile & Metrics -->
+    <!-- Bottom Metrics & User Profile -->
     <div class="mt-auto pt-4">
       <div class="brut bg-[#FFFFFF] p-3">
         <div class="text-[10px] font-mono tracking-widest opacity-60 mb-1">TODAY · STAMPED</div>
@@ -151,42 +168,52 @@
           <div class="font-mono font-bold text-3xl text-[#121210]" id="stamped-count">47</div>
           <div class="text-xs opacity-60 mb-1">of 59 pending</div>
         </div>
-        <div class="mt-2 h-3 border-2 border-[#121210] flex overflow-hidden">
+        <div class="mt-2 h-3.5 border-2 border-[#121210] flex overflow-hidden">
           <div class="bg-[#2E8C42] w-[65%]" title="Approved: 65%"></div>
           <div class="bg-[#C03A3A] w-[15%]" title="Rejected: 15%"></div>
           <div class="bg-[#E8A030] w-[20%]" title="Needs Detail: 20%"></div>
         </div>
+        <div class="flex justify-between text-[9px] font-mono opacity-60 mt-1">
+          <span>65% APP</span>
+          <span>15% REJ</span>
+          <span>20% REV</span>
+        </div>
       </div>
-      <div class="flex items-center gap-2.5 mt-3 p-2 bg-white/40 border border-[#121210]">
-        <img src="https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=100&h=100&fit=crop&crop=face" class="w-9 h-9 border-2 border-[#121210] object-cover" alt="Approver"/>
+
+      <div class="flex items-center gap-2.5 mt-3 p-2 bg-white/50 border-2 border-[#121210]">
+        <img src="https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=100&h=100&fit=crop&crop=face" class="w-10 h-10 border-2 border-[#121210] object-cover" alt="Mara Vossberg CFO"/>
         <div>
           <div class="text-xs font-bold leading-tight">Mara Vossberg</div>
-          <div class="text-[9px] font-mono opacity-60">CHIEF FINANCIAL OFFICER</div>
+          <div class="text-[9px] font-mono opacity-60 font-semibold">CFO · EXECUTIVE APPROVER</div>
         </div>
       </div>
     </div>
   </aside>
 
-  <!-- MAIN PANE -->
+  <!-- ==========================================
+       MAIN PANE
+       ========================================== -->
   <main class="flex-1 flex flex-col min-w-0">
 
-    <!-- TOP HEADER BAR -->
+    <!-- TOP HEADER -->
     <header class="border-b-[3px] border-[#121210] bg-[#CFE8D6] px-6 py-4 flex flex-col md:flex-row md:items-center justify-between gap-4">
       <div>
         <div class="flex items-center gap-3 flex-wrap">
-          <h1 class="font-display font-extrabold text-2xl sm:text-3xl tracking-tight">Approver Inbox</h1>
-          <span class="tag bg-[#FFFFFF]">12 PENDING</span>
+          <h1 class="font-display font-black text-2xl sm:text-3xl tracking-tight">Approver Inbox</h1>
+          <span class="tag bg-[#FFFFFF]" id="pill-pending">12 PENDING</span>
           <span class="tag bg-[#C03A3A] text-[#FFFFFF] border-[#121210]">3 PAST SLA</span>
+          <span class="tag bg-[#E8A030] text-[#121210]">HOTKEYS ACTIVE</span>
         </div>
         <div class="text-xs font-mono opacity-70 mt-1 flex items-center gap-2">
           <span id="live-timestamp">LIVE · 15 OCT 2026 · 13:42:18 UTC</span>
           <span class="w-2 h-2 rounded-full bg-[#2E8C42] animate-ping"></span>
         </div>
       </div>
+
       <div class="flex items-center gap-2 flex-wrap">
         <div class="brut bg-[#FFFFFF] flex items-center gap-2 px-3 py-2 w-full sm:w-64">
-          <i class="ti ti-search"></i>
-          <input id="search-input" oninput="filterSearch(this.value)" class="bg-transparent flex-1 text-xs font-mono outline-none" placeholder="Search PO, vendor, requester…" />
+          <i class="ti ti-search text-base"></i>
+          <input id="search-input" oninput="filterSearch(this.value)" class="bg-transparent flex-1 text-xs font-mono outline-none" placeholder="Search PO, vendor, user…" />
           <span class="font-mono text-[9px] border border-[#121210] px-1 bg-[#CFE8D6]">⌘K</span>
         </div>
         <button onclick="promptNewRequest()" class="brut bg-[#121210] text-[#FFFFFF] px-4 py-2 font-display font-bold text-xs btn-press flex items-center gap-1.5">
@@ -203,7 +230,7 @@
       <button onclick="scrollToSection('workflow-builder-section')" class="font-display font-bold px-5 py-2 border-[3px] border-[#121210] border-l-0 border-b-0 -mb-[3px] bg-[#FFFFFF] text-xs hover:bg-slate-50">Workflow Builder</button>
     </div>
 
-    <!-- SPLIT CONTENT: REQUEST QUEUE + DOCUMENT DETAIL + ACTION RAIL -->
+    <!-- THREE-PANE CORE: REQUEST QUEUE + DOCUMENT DETAIL + ACTION RAIL -->
     <div class="flex flex-col lg:flex-row flex-1 min-h-0">
 
       <!-- REQUEST QUEUE PANE -->
@@ -219,138 +246,141 @@
           <span class="opacity-60 text-[11px]">SORT: SLA URGENCY ↓</span>
         </div>
 
-        <!-- Card 1 (Active) -->
-        <article class="req-card brut-card p-4 relative cursor-pointer active-card" onclick="selectPO(0, this)">
-          <span class="absolute -top-2.5 -left-2 bg-[#E8A030] border-2 border-[#121210] px-2 py-0.5 text-[10px] font-mono font-bold">PO-2025-0418</span>
-          <div class="flex justify-between items-start gap-2">
-            <div>
-              <div class="font-display font-bold text-lg leading-tight">Helvetica Logistics Co.</div>
-              <div class="text-xs opacity-70 mt-0.5">Q1 Warehouse Rack Replacement · 14 items</div>
+        <!-- Request Cards List -->
+        <div id="cards-container" class="space-y-4">
+          <!-- Card 1 (Active) -->
+          <article class="req-card brut-card p-4 relative cursor-pointer active-card" onclick="selectPO(0, this)">
+            <span class="absolute -top-2.5 -left-2 bg-[#E8A030] border-2 border-[#121210] px-2 py-0.5 text-[10px] font-mono font-bold">PO-2025-0418</span>
+            <div class="flex justify-between items-start gap-2">
+              <div>
+                <div class="font-display font-bold text-lg leading-tight">Helvetica Logistics Co.</div>
+                <div class="text-xs opacity-70 mt-0.5">Q1 Warehouse Rack Replacement · 14 items</div>
+              </div>
+              <div class="text-right shrink-0">
+                <div class="font-mono font-bold text-xl">$48,920.00</div>
+                <div class="text-[10px] font-mono opacity-60">USD · NET-30</div>
+              </div>
             </div>
-            <div class="text-right shrink-0">
-              <div class="font-mono font-bold text-xl">$48,920.00</div>
-              <div class="text-[10px] font-mono opacity-60">USD · NET-30</div>
+            <div class="flex items-center gap-2 mt-3 flex-wrap">
+              <span class="tag bg-[#CFE8D6]">CAPEX</span>
+              <span class="tag bg-[#FFFFFF]">PURCHASE ORDER</span>
+              <span class="tag bg-[#E8A030] text-black"><i class="ti ti-clock text-xs"></i>3D SLA LEFT</span>
             </div>
-          </div>
-          <div class="flex items-center gap-2 mt-3 flex-wrap">
-            <span class="tag bg-[#CFE8D6]">CAPEX</span>
-            <span class="tag bg-[#FFFFFF]">PURCHASE ORDER</span>
-            <span class="tag bg-[#E8A030] text-black"><i class="ti ti-clock text-xs"></i>3D SLA LEFT</span>
-          </div>
-          <div class="flex items-center justify-between mt-4">
-            <div class="flex items-center gap-2">
-              <img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=80&h=80&fit=crop&crop=face" class="w-7 h-7 border-2 border-[#121210] object-cover"/>
-              <div class="text-xs"><span class="font-semibold">Devin Park</span><br/><span class="opacity-60 font-mono text-[10px]">OPS · SUBMITTED 09:11</span></div>
+            <div class="flex items-center justify-between mt-4">
+              <div class="flex items-center gap-2">
+                <img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=80&h=80&fit=crop&crop=face" class="w-7 h-7 border-2 border-[#121210] object-cover"/>
+                <div class="text-xs"><span class="font-semibold">Devin Park</span><br/><span class="opacity-60 font-mono text-[10px]">OPS · SUBMITTED 09:11</span></div>
+              </div>
+              <div class="flex items-center">
+                <span class="chain-node bg-[#2E8C42] text-white">✓</span>
+                <span class="chain-line"></span>
+                <span class="chain-node bg-[#2E8C42] text-white">✓</span>
+                <span class="chain-line"></span>
+                <span class="chain-node bg-[#E8A030]">M</span>
+                <span class="chain-line"></span>
+                <span class="chain-node bg-[#FFFFFF] opacity-50">·</span>
+              </div>
             </div>
-            <div class="flex items-center">
-              <span class="chain-node bg-[#2E8C42] text-white">✓</span>
-              <span class="chain-line"></span>
-              <span class="chain-node bg-[#2E8C42] text-white">✓</span>
-              <span class="chain-line"></span>
-              <span class="chain-node bg-[#E8A030]">M</span>
-              <span class="chain-line"></span>
-              <span class="chain-node bg-[#FFFFFF] opacity-50">·</span>
-            </div>
-          </div>
-        </article>
+          </article>
 
-        <!-- Card 2 -->
-        <article class="req-card brut-card p-4 relative cursor-pointer" onclick="selectPO(1, this)">
-          <span class="absolute -top-2.5 -left-2 bg-[#FFFFFF] border-2 border-[#121210] px-2 py-0.5 text-[10px] font-mono font-bold">EXP-9921</span>
-          <div class="flex justify-between items-start gap-2">
-            <div>
-              <div class="font-display font-bold text-lg leading-tight">Figma Inc.</div>
-              <div class="text-xs opacity-70 mt-0.5">Annual team seat renewal · 22 seats</div>
+          <!-- Card 2 -->
+          <article class="req-card brut-card p-4 relative cursor-pointer" onclick="selectPO(1, this)">
+            <span class="absolute -top-2.5 -left-2 bg-[#FFFFFF] border-2 border-[#121210] px-2 py-0.5 text-[10px] font-mono font-bold">EXP-9921</span>
+            <div class="flex justify-between items-start gap-2">
+              <div>
+                <div class="font-display font-bold text-lg leading-tight">Figma Inc.</div>
+                <div class="text-xs opacity-70 mt-0.5">Annual team seat renewal · 22 seats</div>
+              </div>
+              <div class="text-right shrink-0">
+                <div class="font-mono font-bold text-xl">$3,960.00</div>
+                <div class="text-[10px] font-mono opacity-60">USD · CARD</div>
+              </div>
             </div>
-            <div class="text-right shrink-0">
-              <div class="font-mono font-bold text-xl">$3,960.00</div>
-              <div class="text-[10px] font-mono opacity-60">USD · CARD</div>
+            <div class="flex items-center gap-2 mt-3 flex-wrap">
+              <span class="tag bg-[#CFE8D6]">SOFTWARE</span>
+              <span class="tag bg-[#FFFFFF]">EXPENSE</span>
+              <span class="tag bg-[#2E8C42] text-white">COMPLIANT</span>
             </div>
-          </div>
-          <div class="flex items-center gap-2 mt-3 flex-wrap">
-            <span class="tag bg-[#CFE8D6]">SOFTWARE</span>
-            <span class="tag bg-[#FFFFFF]">EXPENSE</span>
-            <span class="tag bg-[#2E8C42] text-white">READY</span>
-          </div>
-          <div class="flex items-center justify-between mt-4">
-            <div class="flex items-center gap-2">
-              <img src="https://images.unsplash.com/photo-1517841905240-472988babdf9?w=80&h=80&fit=crop&crop=face" class="w-7 h-7 border-2 border-[#121210] object-cover"/>
-              <div class="text-xs"><span class="font-semibold">Lena Akhtar</span><br/><span class="opacity-60 font-mono text-[10px]">DESIGN · 08:47</span></div>
+            <div class="flex items-center justify-between mt-4">
+              <div class="flex items-center gap-2">
+                <img src="https://images.unsplash.com/photo-1517841905240-472988babdf9?w=80&h=80&fit=crop&crop=face" class="w-7 h-7 border-2 border-[#121210] object-cover"/>
+                <div class="text-xs"><span class="font-semibold">Lena Akhtar</span><br/><span class="opacity-60 font-mono text-[10px]">DESIGN · 08:47</span></div>
+              </div>
+              <div class="flex items-center">
+                <span class="chain-node bg-[#2E8C42] text-white">✓</span>
+                <span class="chain-line"></span>
+                <span class="chain-node bg-[#E8A030]">M</span>
+                <span class="chain-line"></span>
+                <span class="chain-node bg-[#FFFFFF] opacity-50">·</span>
+              </div>
             </div>
-            <div class="flex items-center">
-              <span class="chain-node bg-[#2E8C42] text-white">✓</span>
-              <span class="chain-line"></span>
-              <span class="chain-node bg-[#E8A030]">M</span>
-              <span class="chain-line"></span>
-              <span class="chain-node bg-[#FFFFFF] opacity-50">·</span>
-            </div>
-          </div>
-        </article>
+          </article>
 
-        <!-- Card 3 (Escalated) -->
-        <article class="req-card brut-card p-4 relative cursor-pointer" onclick="selectPO(2, this)">
-          <span class="absolute -top-2.5 -left-2 bg-[#C03A3A] text-[#FFFFFF] border-2 border-[#121210] px-2 py-0.5 text-[10px] font-mono font-bold">⚠ PO-2025-0402</span>
-          <div class="flex justify-between items-start gap-2">
-            <div>
-              <div class="font-display font-bold text-lg leading-tight">Brunswick Catering Ltd.</div>
-              <div class="text-xs opacity-70 mt-0.5">Off-site quarterly all-hands · Q1</div>
+          <!-- Card 3 (Escalated) -->
+          <article class="req-card brut-card p-4 relative cursor-pointer" onclick="selectPO(2, this)">
+            <span class="absolute -top-2.5 -left-2 bg-[#C03A3A] text-[#FFFFFF] border-2 border-[#121210] px-2 py-0.5 text-[10px] font-mono font-bold">⚠ PO-2025-0402</span>
+            <div class="flex justify-between items-start gap-2">
+              <div>
+                <div class="font-display font-bold text-lg leading-tight">Brunswick Catering Ltd.</div>
+                <div class="text-xs opacity-70 mt-0.5">Off-site quarterly all-hands · Q1</div>
+              </div>
+              <div class="text-right shrink-0">
+                <div class="font-mono font-bold text-xl text-[#C03A3A]">$12,480.50</div>
+                <div class="text-[10px] font-mono opacity-60">USD · INVOICE</div>
+              </div>
             </div>
-            <div class="text-right shrink-0">
-              <div class="font-mono font-bold text-xl text-[#C03A3A]">$12,480.50</div>
-              <div class="text-[10px] font-mono opacity-60">USD · INVOICE</div>
+            <div class="flex items-center gap-2 mt-3 flex-wrap">
+              <span class="tag bg-[#CFE8D6]">EVENTS</span>
+              <span class="tag bg-[#C03A3A] text-[#FFFFFF]"><i class="ti ti-flame text-xs"></i>ESCALATED</span>
+              <span class="tag bg-[#FFFFFF]">+2 DAYS LATE</span>
             </div>
-          </div>
-          <div class="flex items-center gap-2 mt-3 flex-wrap">
-            <span class="tag bg-[#CFE8D6]">EVENTS</span>
-            <span class="tag bg-[#C03A3A] text-[#FFFFFF]"><i class="ti ti-flame text-xs"></i>ESCALATED</span>
-            <span class="tag bg-[#FFFFFF]">+2 DAYS LATE</span>
-          </div>
-          <div class="flex items-center justify-between mt-4">
-            <div class="flex items-center gap-2">
-              <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=80&h=80&fit=crop&crop=face" class="w-7 h-7 border-2 border-[#121210] object-cover"/>
-              <div class="text-xs"><span class="font-semibold">Marco Reyes</span><br/><span class="opacity-60 font-mono text-[10px]">PEOPLE OPS · 11 MAR</span></div>
+            <div class="flex items-center justify-between mt-4">
+              <div class="flex items-center gap-2">
+                <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=80&h=80&fit=crop&crop=face" class="w-7 h-7 border-2 border-[#121210] object-cover"/>
+                <div class="text-xs"><span class="font-semibold">Marco Reyes</span><br/><span class="opacity-60 font-mono text-[10px]">PEOPLE OPS · 11 MAR</span></div>
+              </div>
+              <div class="flex items-center">
+                <span class="chain-node bg-[#2E8C42] text-white">✓</span>
+                <span class="chain-line"></span>
+                <span class="chain-node bg-[#C03A3A] text-white">!</span>
+                <span class="chain-line"></span>
+                <span class="chain-node bg-[#FFFFFF] opacity-50">·</span>
+              </div>
             </div>
-            <div class="flex items-center">
-              <span class="chain-node bg-[#2E8C42] text-white">✓</span>
-              <span class="chain-line"></span>
-              <span class="chain-node bg-[#C03A3A] text-white">!</span>
-              <span class="chain-line"></span>
-              <span class="chain-node bg-[#FFFFFF] opacity-50">·</span>
-            </div>
-          </div>
-        </article>
+          </article>
 
-        <!-- Card 4 -->
-        <article class="req-card brut-card p-4 relative cursor-pointer" onclick="selectPO(3, this)">
-          <span class="absolute -top-2.5 -left-2 bg-[#FFFFFF] border-2 border-[#121210] px-2 py-0.5 text-[10px] font-mono font-bold">EXP-9918</span>
-          <div class="flex justify-between items-start gap-2">
-            <div>
-              <div class="font-display font-bold text-lg leading-tight">AWS Cloud Infrastructure</div>
-              <div class="text-xs opacity-70 mt-0.5">Production cluster spend · auto-billed</div>
+          <!-- Card 4 -->
+          <article class="req-card brut-card p-4 relative cursor-pointer" onclick="selectPO(3, this)">
+            <span class="absolute -top-2.5 -left-2 bg-[#FFFFFF] border-2 border-[#121210] px-2 py-0.5 text-[10px] font-mono font-bold">EXP-9918</span>
+            <div class="flex justify-between items-start gap-2">
+              <div>
+                <div class="font-display font-bold text-lg leading-tight">AWS Cloud Infrastructure</div>
+                <div class="text-xs opacity-70 mt-0.5">Production cluster spend · auto-billed</div>
+              </div>
+              <div class="text-right shrink-0">
+                <div class="font-mono font-bold text-xl">$27,304.18</div>
+                <div class="text-[10px] font-mono opacity-60">USD · ACH</div>
+              </div>
             </div>
-            <div class="text-right shrink-0">
-              <div class="font-mono font-bold text-xl">$27,304.18</div>
-              <div class="text-[10px] font-mono opacity-60">USD · ACH</div>
+            <div class="flex items-center gap-2 mt-3 flex-wrap">
+              <span class="tag bg-[#CFE8D6]">INFRA</span>
+              <span class="tag bg-[#FFFFFF]">RECURRING</span>
             </div>
-          </div>
-          <div class="flex items-center gap-2 mt-3 flex-wrap">
-            <span class="tag bg-[#CFE8D6]">INFRA</span>
-            <span class="tag bg-[#FFFFFF]">RECURRING</span>
-          </div>
-          <div class="flex items-center justify-between mt-4">
-            <div class="flex items-center gap-2">
-              <img src="https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=80&h=80&fit=crop&crop=face" class="w-7 h-7 border-2 border-[#121210] object-cover"/>
-              <div class="text-xs"><span class="font-semibold">Noor Halberg</span><br/><span class="opacity-60 font-mono text-[10px]">ENG LEAD · 07:30</span></div>
+            <div class="flex items-center justify-between mt-4">
+              <div class="flex items-center gap-2">
+                <img src="https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=80&h=80&fit=crop&crop=face" class="w-7 h-7 border-2 border-[#121210] object-cover"/>
+                <div class="text-xs"><span class="font-semibold">Noor Halberg</span><br/><span class="opacity-60 font-mono text-[10px]">ENG LEAD · 07:30</span></div>
+              </div>
+              <div class="flex items-center">
+                <span class="chain-node bg-[#2E8C42] text-white">✓</span>
+                <span class="chain-line"></span>
+                <span class="chain-node bg-[#2E8C42] text-white">✓</span>
+                <span class="chain-line"></span>
+                <span class="chain-node bg-[#E8A030]">M</span>
+              </div>
             </div>
-            <div class="flex items-center">
-              <span class="chain-node bg-[#2E8C42] text-white">✓</span>
-              <span class="chain-line"></span>
-              <span class="chain-node bg-[#2E8C42] text-white">✓</span>
-              <span class="chain-line"></span>
-              <span class="chain-node bg-[#E8A030]">M</span>
-            </div>
-          </div>
-        </article>
+          </article>
+        </div>
 
       </section>
 
@@ -373,7 +403,7 @@
               </div>
               <div class="text-right">
                 <div class="font-mono text-[10px] opacity-60 tracking-widest">BILL TO</div>
-                <div class="font-display font-bold text-sm">Stamply Holdings GmbH</div>
+                <div class="font-display font-bold text-sm">Approva Holdings GmbH</div>
                 <div class="font-mono text-[10px] opacity-60">DE-10115 BERLIN · VAT DE318442001</div>
               </div>
             </div>
@@ -424,7 +454,7 @@
 
             <!-- Approval Stepper Chain -->
             <div class="mt-6 border-t-[3px] border-[#121210] pt-4">
-              <div class="font-mono text-[10px] opacity-60 tracking-widest mb-3">MULTI-TIER APPROVAL CHAIN</div>
+              <div class="font-mono text-[10px] opacity-60 tracking-widest mb-3 uppercase font-bold">Multi-Stage Approval Hierarchy</div>
               <div class="flex items-center gap-2 flex-wrap">
                 <div class="brut-sm bg-[#2E8C42] text-white px-3 py-1.5 text-xs">
                   <div class="font-bold">D. Park</div><div class="text-[10px] opacity-90">Submitter</div>
@@ -439,7 +469,7 @@
                 </div>
                 <i class="ti ti-arrow-narrow-right text-xl"></i>
                 <div class="brut-sm bg-[#E8A030] px-3 py-1.5 text-xs">
-                  <div class="font-bold">YOU (CFO)</div><div class="text-[10px] font-bold">Pending Approval</div>
+                  <div class="font-bold">YOU (CFO)</div><div class="text-[10px] font-bold">Pending Review</div>
                 </div>
                 <i class="ti ti-arrow-narrow-right text-xl opacity-40"></i>
                 <div class="border-2 border-dashed border-[#121210]/40 px-3 py-1.5 text-xs opacity-60">
@@ -451,7 +481,7 @@
 
           <!-- STAMP DECISION ACTION RAIL -->
           <div class="w-full xl:w-48 shrink-0 space-y-4">
-            <div class="font-mono text-[10px] tracking-widest opacity-60 uppercase">AUDIT DECISION</div>
+            <div class="font-mono text-[10px] tracking-widest opacity-60 uppercase font-bold">Audit Decision</div>
             
             <!-- Approve Button -->
             <button id="btn-approve" onclick="applyDecision('APPROVED', '#2E8C42')" class="stamp-btn w-full bg-[#2E8C42] text-white">
@@ -476,7 +506,7 @@
 
             <!-- POLICY CHECKLIST WIDGET -->
             <div class="brut bg-white p-3.5 mt-4">
-              <div class="font-mono text-[10px] tracking-widest opacity-60 uppercase mb-2">POLICY RULES</div>
+              <div class="font-mono text-[10px] tracking-widest opacity-60 uppercase mb-2 font-bold">Policy Rules</div>
               <div class="text-xs py-1 flex justify-between border-b border-[#121210]/10">
                 <span>3-quote Rule</span><span class="text-[#2E8C42] font-bold">PASS ✓</span>
               </div>
@@ -491,6 +521,14 @@
               </div>
             </div>
 
+            <!-- HOTKEYS REMINDER -->
+            <div class="brut bg-[#CFE8D6] p-2.5 text-[10px] font-mono opacity-80 space-y-1">
+              <div class="font-bold border-b border-[#121210]/20 pb-0.5">KEYBOARD SHORTCUTS</div>
+              <div><span class="font-bold">Ctrl/⌘+Enter</span>: Approve</div>
+              <div><span class="font-bold">Ctrl/⌘+Bksp</span>: Reject</div>
+              <div><span class="font-bold">Ctrl/⌘+D</span>: Needs Detail</div>
+            </div>
+
           </div>
         </div>
 
@@ -500,7 +538,7 @@
             <div class="font-display font-bold text-lg flex items-center gap-2"><i class="ti ti-list-details text-[#2E8C42]"></i>IMMUTABLE AUDIT LOG</div>
             <span class="font-mono text-[10px] opacity-60 tracking-wider">SHA-256 STATE CHAIN</span>
           </div>
-          <pre id="audit-terminal-log" class="font-mono text-xs leading-6 whitespace-pre-wrap opacity-90 overflow-x-auto">
+          <pre id="audit-terminal-log" class="font-mono text-xs leading-6 whitespace-pre-wrap opacity-90 overflow-x-auto max-h-48">
 2026-10-15 09:11:02Z  CREATED   devin.park@stamply.io     PO-2025-0418 submitted · $48,920.00
 2026-10-15 09:11:04Z  ROUTED    system                    → chain "CapEx ≥ $25k" (4 stages)
 2026-10-15 09:18:47Z  STAMPED   anna.klein@stamply.io     APPROVED · stage 1/4 · note: "Ops signed off."
@@ -512,8 +550,8 @@
         <!-- HISTORY MINI TABLE SECTION -->
         <div id="history-table-section" class="mt-6 brut bg-[#FFFFFF] overflow-hidden">
           <div class="flex items-center justify-between p-4 border-b-[3px] border-[#121210]">
-            <div class="font-display font-bold text-lg flex items-center gap-2"><i class="ti ti-archive"></i>RECENTLY STAMPED TRANSACTIONS</div>
-            <button class="text-xs font-mono underline hover:text-[#2E8C42] font-bold">EXPORT CSV (2,481) →</button>
+            <div class="font-display font-bold text-lg flex items-center gap-2"><i class="ti ti-archive text-xl"></i>RECENTLY STAMPED TRANSACTIONS</div>
+            <button onclick="exportCSV()" class="text-xs font-mono underline hover:text-[#2E8C42] font-bold">EXPORT CSV (2,481) →</button>
           </div>
           <div class="overflow-x-auto">
             <table class="w-full font-mono text-xs sm:text-sm">
@@ -542,33 +580,33 @@
           <div class="flex items-center justify-between p-4 border-b-[3px] border-[#121210] flex-wrap gap-2">
             <div>
               <div class="font-display font-bold text-lg flex items-center gap-2"><i class="ti ti-git-merge text-[#2E8C42]"></i>WORKFLOW BUILDER — "CapEx ≥ $25k"</div>
-              <div class="text-xs font-mono opacity-60 mt-0.5">Drag & drop policy pipeline · 4 stages active</div>
+              <div class="text-xs font-mono opacity-60 mt-0.5">Drag & drop policy pipeline · 4 stages active · 142 requests routed</div>
             </div>
             <div class="flex gap-2">
-              <button onclick="alert('Stage Added')" class="brut-sm bg-[#FFFFFF] px-3 py-1 text-xs font-display font-bold btn-press">+ STAGE</button>
-              <button onclick="alert('Workflow Published')" class="brut-sm bg-[#2E8C42] text-white px-3 py-1 text-xs font-display font-bold btn-press">PUBLISH</button>
+              <button onclick="addWorkflowStage()" class="brut-sm bg-[#FFFFFF] px-3 py-1 text-xs font-display font-bold btn-press">+ STAGE</button>
+              <button onclick="publishWorkflow()" class="brut-sm bg-[#2E8C42] text-white px-3 py-1 text-xs font-display font-bold btn-press">PUBLISH</button>
             </div>
           </div>
           <div class="polka p-6 overflow-x-auto">
-            <div class="flex items-center gap-2 min-w-[700px]">
-              <div class="brut bg-[#CFE8D6] px-4 py-3 shrink-0">
+            <div class="flex items-center gap-2 min-w-[720px]" id="workflow-nodes">
+              <div class="brut bg-[#CFE8D6] px-4 py-3 shrink-0 cursor-grab">
                 <div class="font-mono text-[9px] opacity-60">TRIGGER</div>
                 <div class="font-display font-bold text-sm">New Request</div>
               </div>
               <div class="flex items-center"><div class="w-4 h-1 bg-[#121210]"></div><div class="w-0 h-0" style="border-top:5px solid transparent;border-bottom:5px solid transparent;border-left:6px solid #121210"></div></div>
-              <div class="brut bg-[#FFFFFF] px-4 py-3 shrink-0">
+              <div class="brut bg-[#FFFFFF] px-4 py-3 shrink-0 cursor-grab">
                 <div class="font-mono text-[9px] opacity-60">STAGE 1 · MGR</div>
                 <div class="font-display font-bold text-sm">Direct Manager</div>
                 <div class="text-[9px] font-mono opacity-60">SLA: 24h</div>
               </div>
               <div class="flex items-center"><div class="w-4 h-1 bg-[#121210]"></div><div class="w-0 h-0" style="border-top:5px solid transparent;border-bottom:5px solid transparent;border-left:6px solid #121210"></div></div>
-              <div class="brut bg-[#FFFFFF] px-4 py-3 shrink-0">
+              <div class="brut bg-[#FFFFFF] px-4 py-3 shrink-0 cursor-grab">
                 <div class="font-mono text-[9px] opacity-60">STAGE 2 · FIN</div>
                 <div class="font-display font-bold text-sm">Fin Controller</div>
                 <div class="text-[9px] font-mono opacity-60">SLA: 48h</div>
               </div>
               <div class="flex items-center"><div class="w-4 h-1 bg-[#121210]"></div><div class="w-0 h-0" style="border-top:5px solid transparent;border-bottom:5px solid transparent;border-left:6px solid #121210"></div></div>
-              <div class="brut bg-[#E8A030] px-4 py-3 shrink-0">
+              <div class="brut bg-[#E8A030] px-4 py-3 shrink-0 cursor-grab">
                 <div class="font-mono text-[9px] opacity-80">STAGE 3 · EXEC</div>
                 <div class="font-display font-bold text-sm">CFO Review</div>
                 <div class="text-[9px] font-mono">SLA: 72h</div>
@@ -634,7 +672,9 @@
   </main>
 </div>
 
-<!-- LOGIC & 3D WEBGL ENGINE -->
+<!-- ==========================================
+     LOGIC: THREE.JS 3D ENGINE, HOTKEYS & AUDIO
+     ========================================== -->
 <script>
   /* ========================================================
      1. THREE.JS 3D KINETIC AUDIT SEAL
@@ -648,37 +688,46 @@
   renderer.domElement.id = 'seal-3d-canvas';
   sealContainer.appendChild(renderer.domElement);
 
-  // Group for rotation
   const tokenGroup = new THREE.Group();
   scene.add(tokenGroup);
 
-  // Gold metallic material for brutalist seal
+  // Metallic materials
+  const coinColors = [0x2E8C42, 0x121210, 0xE8A030, 0xC03A3A, 0x00A3FF];
+  let colorIdx = 0;
+
   const brassMaterial = new THREE.MeshStandardMaterial({
-    color: 0x2E8C42,
+    color: coinColors[0],
     metalness: 0.85,
-    roughness: 0.25,
-    wireframe: false
+    roughness: 0.25
   });
 
   const rimMaterial = new THREE.MeshStandardMaterial({
     color: 0x121210,
-    metalness: 0.9,
-    roughness: 0.3
+    metalness: 0.95,
+    roughness: 0.2
   });
 
-  // Cylinder Token / Seal
-  const cylinderGeo = new THREE.CylinderGeometry(1.6, 1.6, 0.35, 32);
+  // Cylinder Token
+  const cylinderGeo = new THREE.CylinderGeometry(1.65, 1.65, 0.35, 36);
   const sealMesh = new THREE.Mesh(cylinderGeo, brassMaterial);
   tokenGroup.add(sealMesh);
 
   // Rim ring
-  const torusGeo = new THREE.TorusGeometry(1.65, 0.08, 16, 64);
+  const torusGeo = new THREE.TorusGeometry(1.7, 0.09, 16, 64);
   const rimMesh = new THREE.Mesh(torusGeo, rimMaterial);
   rimMesh.rotation.x = Math.PI / 2;
   tokenGroup.add(rimMesh);
 
+  // Internal Stamp Motif (Octagram geometry)
+  const starGeo = new THREE.RingGeometry(0.5, 0.9, 8);
+  const starMat = new THREE.MeshBasicMaterial({ color: 0xFFFFFF, side: THREE.DoubleSide });
+  const starMesh = new THREE.Mesh(starGeo, starMat);
+  starMesh.position.y = 0.18;
+  starMesh.rotation.x = Math.PI / 2;
+  tokenGroup.add(starMesh);
+
   // Lighting
-  const light1 = new THREE.DirectionalLight(0xffffff, 2.2);
+  const light1 = new THREE.DirectionalLight(0xffffff, 2.5);
   light1.position.set(5, 5, 5);
   scene.add(light1);
 
@@ -686,35 +735,34 @@
   light2.position.set(-3, -3, 2);
   scene.add(light2);
 
-  const amb = new THREE.AmbientLight(0xffffff, 0.8);
+  const amb = new THREE.AmbientLight(0xffffff, 0.85);
   scene.add(amb);
 
   camera.position.z = 4.8;
-  tokenGroup.rotation.x = 0.5;
+  tokenGroup.rotation.x = 0.45;
 
   // Mouse Interaction for 3D Seal
   let isDragging = false;
-  let previousMouseX = 0, previousMouseY = 0;
+  let prevMouseX = 0, prevMouseY = 0;
 
   sealContainer.addEventListener('mousedown', (e) => {
     isDragging = true;
-    previousMouseX = e.clientX;
-    previousMouseY = e.clientY;
+    prevMouseX = e.clientX;
+    prevMouseY = e.clientY;
   });
 
   window.addEventListener('mouseup', () => { isDragging = false; });
 
   window.addEventListener('mousemove', (e) => {
     if (!isDragging) return;
-    const deltaX = e.clientX - previousMouseX;
-    const deltaY = e.clientY - previousMouseY;
+    const deltaX = e.clientX - prevMouseX;
+    const deltaY = e.clientY - prevMouseY;
     tokenGroup.rotation.y += deltaX * 0.02;
     tokenGroup.rotation.x += deltaY * 0.02;
-    previousMouseX = e.clientX;
-    previousMouseY = e.clientY;
+    prevMouseX = e.clientX;
+    prevMouseY = e.clientY;
   });
 
-  // Resize handler for seal
   window.addEventListener('resize', () => {
     if (!sealContainer) return;
     camera.aspect = sealContainer.clientWidth / sealContainer.clientHeight;
@@ -730,6 +778,18 @@
     renderer.render(scene, camera);
   }
   animateSeal();
+
+  function switch3DMaterial() {
+    colorIdx = (colorIdx + 1) % coinColors.length;
+    brassMaterial.color.set(coinColors[colorIdx]);
+    light2.color.set(coinColors[colorIdx]);
+    showToast("3D Shader Shift", "Seal material color refreshed");
+    playSynthTone(600, 0.08);
+  }
+
+  function trigger3DAction(label) {
+    applyDecision(label, '#2E8C42');
+  }
 
   /* ========================================================
      2. MOCK PO DATABASE & DYNAMIC DOCUMENT SWITCHER
@@ -829,7 +889,7 @@
     // Clear previous big stamp watermark
     document.getElementById('stamp-drop').innerHTML = '';
 
-    // Play subtle click
+    // Audio click
     playSynthTone(480, 0.08);
 
     // GSAP entrance flash
@@ -837,7 +897,7 @@
   }
 
   /* ========================================================
-     3. STAMP DECISION ENGINE & SOUND FX
+     3. STAMP DECISION ENGINE, CELEBRATION & SOUND FX
      ======================================================== */
   let audioCtx = null;
   function playSynthTone(freq, duration) {
@@ -872,6 +932,16 @@
     playSynthTone(120, 0.25);
     setTimeout(() => playSynthTone(400, 0.1), 80);
 
+    // Confetti on approve
+    if (label === 'APPROVED' && typeof confetti === 'function') {
+      confetti({
+        particleCount: 80,
+        spread: 60,
+        origin: { y: 0.6 },
+        colors: ['#2E8C42', '#CFE8D6', '#121210', '#E8A030']
+      });
+    }
+
     // Stamp Animation
     gsap.fromTo(el, 
       { scale: 3.2, rotation: -20, opacity: 0 },
@@ -899,20 +969,51 @@
     log.innerText += `\n${now}  DECISION  mara.vossberg@stamply.io  ${label} · ${po.id} · ${po.total}`;
     log.scrollTop = log.scrollHeight;
 
+    // Toast
+    showToast(label, `${po.id} (${po.vendor}) has been marked as ${label}`);
+
     // Increment counter
     const countEl = document.getElementById('stamped-count');
     countEl.innerText = parseInt(countEl.innerText) + 1;
   }
 
-  function stampRandomSeal() {
-    const choices = [
-      { label: 'APPROVED', color: '#2E8C42' },
-      { label: 'REJECTED', color: '#C03A3A' },
-      { label: 'NEEDS DETAIL', color: '#E8A030' }
-    ];
-    const pick = choices[Math.floor(Math.random() * choices.length)];
-    applyDecision(pick.label, pick.color);
+  function showToast(title, desc) {
+    const toast = document.getElementById('toast');
+    document.getElementById('toast-title').innerText = title;
+    document.getElementById('toast-desc').innerText = desc;
+    toast.style.transform = 'translateY(0)';
+    toast.style.opacity = '1';
+    setTimeout(() => {
+      toast.style.transform = 'translateY(-100px)';
+      toast.style.opacity = '0';
+    }, 2800);
   }
+
+  /* ========================================================
+     4. HOTKEY DISPATCHER
+     ======================================================== */
+  window.addEventListener('keydown', (e) => {
+    // Cmd/Ctrl + Enter -> Approve
+    if ((e.metaKey || e.ctrlKey) && e.key === 'Enter') {
+      e.preventDefault();
+      applyDecision('APPROVED', '#2E8C42');
+    }
+    // Cmd/Ctrl + Backspace -> Reject
+    if ((e.metaKey || e.ctrlKey) && e.key === 'Backspace') {
+      e.preventDefault();
+      applyDecision('REJECTED', '#C03A3A');
+    }
+    // Cmd/Ctrl + D -> Needs Detail
+    if ((e.metaKey || e.ctrlKey) && (e.key === 'd' || e.key === 'D')) {
+      e.preventDefault();
+      applyDecision('NEEDS DETAIL', '#E8A030');
+    }
+    // Cmd/Ctrl + K -> Focus Search
+    if ((e.metaKey || e.ctrlKey) && (e.key === 'k' || e.key === 'K')) {
+      e.preventDefault();
+      document.getElementById('search-input').focus();
+    }
+  });
 
   function scrollToSection(id) {
     const el = document.getElementById(id);
@@ -940,25 +1041,50 @@
   }
 
   function promptNewRequest() {
-    const vendor = prompt('Enter Vendor Name:', 'Supabase Inc.');
+    const vendor = prompt('Enter Vendor Name:', 'Anthropic PBC');
     if (!vendor) return;
-    const amount = prompt('Enter Amount USD:', '2,400.00');
+    const amount = prompt('Enter Amount USD:', '6,800.00');
     if (!amount) return;
 
     PO_DATA.unshift({
       id: "PO-2025-" + Math.floor(1000 + Math.random() * 9000),
       vendor: vendor,
       location: "San Francisco · CA",
-      category: "Software · Cloud DB",
+      category: "AI & Software · Compute",
       due: "28 MAR 2025",
       total: "$" + amount,
       subtotal: amount,
       items: [
-        { desc: "Dedicated Compute Addon", qty: 1, unit: amount, amount: amount }
+        { desc: "API Enterprise Compute Allocation", qty: 1, unit: amount, amount: amount }
       ]
     });
-    alert('Request ' + PO_DATA[0].id + ' added to Queue!');
+    showToast("Request Enqueued", `${PO_DATA[0].id} added to Approver Queue`);
     selectPO(0);
+  }
+
+  function addWorkflowStage() {
+    const name = prompt("Stage Name:", "Legal Counsel Review");
+    if (!name) return;
+    const container = document.getElementById('workflow-nodes');
+    const div = document.createElement('div');
+    div.className = "brut bg-white px-4 py-3 shrink-0 cursor-grab";
+    div.innerHTML = `
+      <div class="font-mono text-[9px] opacity-60">CUSTOM STAGE</div>
+      <div class="font-display font-bold text-sm">${name}</div>
+      <div class="text-[9px] font-mono opacity-60">SLA: 24h</div>
+    `;
+    container.insertBefore(div, container.lastElementChild.previousElementSibling);
+    showToast("Stage Added", `Appended ${name} to active workflow pipeline.`);
+  }
+
+  function publishWorkflow() {
+    showToast("Workflow Published", "CapEx ≥ $25k pipeline is now enforcing in production.");
+    playSynthTone(750, 0.15);
+  }
+
+  function exportCSV() {
+    showToast("Export Initiated", "Generating CSV of 2,481 audit records...");
+    playSynthTone(600, 0.1);
   }
 
   // Initial Entrance Animation
